@@ -1,0 +1,13 @@
+= Shaiya Genesis - Credits File =
+
+Shaiya Genesis is an open source emulator for Shaiya, originally developed by Triston Plummer ("Cups"). This project, however, would not be possible if it were't for the contributions made by the community, and the developers that have given their input, advice, and ideas. Thank you to all of you!
+
+Thanks go out to the following people, for various contributions/patches:
+
+	- wurstbro123 (Supplied me with information on disabling Shaiya's packet encryption, which sparked my interest in this project)
+	
+	- JuuF (Supplied me with an unpacked Ep8 client, helped brainstorm in regards to login packet structures in the beginning)
+	
+	- Zsozso/szobonya3 (Great person to talk to in regards to packet structures, extensively studied the encryption algorithim, and came up with the first working prototype of Shaiya's packet encryption)
+	
+	- anton1312 (Supplied me with a dump of all the packet structures used in the public OS server files. A great help in furthering the development of this project, and would have taken much longer with his assistance.)
