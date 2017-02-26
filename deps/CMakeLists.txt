@@ -28,5 +28,4 @@ endif()
 
 add_subdirectory(boost)
 add_subdirectory(process)
-add_subdirectory(cryptopp)
 add_subdirectory(mysql)
