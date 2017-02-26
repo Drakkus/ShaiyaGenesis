@@ -7,6 +7,7 @@
  * An abstract interface, used for handling incoming packets
  */
 namespace Genesis::Database::Io::Packets {
+
 	class PacketHandler {
 
 		public:
@@ -27,7 +28,7 @@ namespace Genesis::Database::Io::Packets {
 			 *		The packet data
 			 */
 			virtual void handle(Genesis::Common::Networking::Server::Session::ServerSession* session, 
-				unsigned int length, unsigned short opcode, unsigned char* data) = 0;
+				unsigned int length, unsigned short opcode, unsigned int request_id, unsigned char* data) = 0;
 	};
 }
 #endif

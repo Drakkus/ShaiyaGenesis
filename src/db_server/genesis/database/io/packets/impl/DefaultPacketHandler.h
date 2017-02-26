@@ -23,7 +23,8 @@ namespace Genesis::Database::Io::Packets::Impl {
 		 * @param data
 		 *		The packet data
 		 */
-		void handle(Genesis::Common::Networking::Server::Session::ServerSession* session, unsigned int length, unsigned short opcode, unsigned char* data) override {
+		void handle(Genesis::Common::Networking::Server::Session::ServerSession* session, 
+				unsigned int length, unsigned short opcode, unsigned int request_id, unsigned char* data) override {
 
 			// The current state of the standard output
 			std::ios old_state(nullptr);

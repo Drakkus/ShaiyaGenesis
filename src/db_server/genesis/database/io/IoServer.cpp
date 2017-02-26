@@ -102,14 +102,17 @@ void IoServer::on_receive(Genesis::Common::Networking::Server::Session::ServerSe
 	// The packet opcode
 	unsigned short packet_opcode = ((data[2] & 0xFF) + ((data[3] & 0xFF) << 8));
 
+	// The request id
+	unsigned int request_id = ((data[4] & 0xFF) + ((data[5] & 0xFF) << 8) + ((data[6] & 0xFF) << 16) + ((data[7] & 0xFF) << 24));
+
 	// The packet data
-	unsigned char* packet_data = (data + 4);
+	unsigned char* packet_data = (data + 8);
 
 	// The packet handler
 	auto handler = this->packet_manager->get_handler(packet_opcode);
 
 	// Handle the incoming packet
-	handler->handle(session, packet_length - 4, packet_opcode, packet_data);
+	handler->handle(session, packet_length - 8, packet_opcode, request_id, packet_data);
 }
 
 /**

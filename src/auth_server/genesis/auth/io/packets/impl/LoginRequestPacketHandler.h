@@ -62,7 +62,22 @@ namespace Genesis::Auth::Io::Packets::Impl {
 			bldr->write_bytes(struct_array, sizeof(struct_array));
 
 			// Write the packet
-			db_client->write(bldr->to_packet());
+			db_client->write(bldr->to_packet(), [&](unsigned char* data, unsigned int length) {
+				
+				std::cout << "Callback: Val " << (unsigned int) data[0] << std::endl;
+				
+				// Write the response from the database server, to the client
+				auto bldr = new Genesis::Common::Networking::Packets::PacketBuilder(opcode);
+
+				// Write the byte
+				bldr->write_byte(data[0]);
+
+				// Write the packet
+				session->write(bldr->to_packet());
+
+				// Delete the packet builder
+				delete bldr;
+			});
 
 			// Delete the packet builder
 			delete bldr;

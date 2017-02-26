@@ -4,11 +4,15 @@
 #include <thread>
 #include <chrono>
 #include <iostream>
+#include <iomanip>
 
 bool Genesis::Common::Networking::Client::GenesisClient::connect(std::string address, unsigned short port) {
 
 	// Attempt to catch any exceptions thrown
 	try {
+
+		// Seed the random number generator
+		srand(time(NULL));
 
 		// The port string
 		std::string port_string = std::to_string(port);
@@ -70,9 +74,31 @@ void Genesis::Common::Networking::Client::GenesisClient::handle_read(unsigned ch
 		genesis_logger->error("Error occured in GenesisClient! Aborting process...");
 		exit(1);
 	}
+	
+	// The packet length
+	unsigned int packet_length = ((data[0] & 0xFF) + ((data[1] & 0xFF) << 8));
+	
+	// The packet opcode
+	unsigned short packet_opcode = ((data[2] & 0xFF) + ((data[3] & 0xFF) << 8));
+
+	// The request id
+	unsigned int request_id = ((data[4] & 0xFF) + ((data[5] & 0xFF) << 8) + ((data[6] & 0xFF) << 16) + ((data[7] & 0xFF) << 24));
+
+	// The packet data
+	unsigned char* packet_data = (data + 8);
 
 	// Call the receive function
-	this->receive_function(data, bytes_read);
+	if (this->request_map.count(request_id) != 0) {
+
+		// Define the callback
+		auto callback = request_map[request_id];
+
+		// Erase the request
+		request_map.erase(request_id);
+
+		// Call the callback
+		callback(packet_data, packet_length - 8);
+	}
 
 	// Begin reading some data
 	this->socket.async_read_some(boost::asio::buffer(this->data, MAX_PACKET_LENGTH), boost::bind(&Genesis::Common::Networking::Client::GenesisClient::handle_read, this, this->data, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred));

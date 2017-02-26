@@ -67,10 +67,10 @@ namespace Genesis::Common::Networking::Packets {
 			 *		This instance, for method chaining
 			 */
 			PacketBuilder* write_int(unsigned int value) {
-				write_byte((uint8_t) value >> 24);
-				write_byte((uint8_t) value >> 16);
-				write_byte((uint8_t) value >> 8);
-				write_byte((uint8_t) value);
+				write_byte((uint8_t) value & 0xFF);
+				write_byte((uint8_t) (value >> 8) & 0xFF);
+				write_byte((uint8_t) (value >> 16) & 0xFF);
+				write_byte((uint8_t) (value >> 24) & 0xFF);
 				return this;
 			}
 

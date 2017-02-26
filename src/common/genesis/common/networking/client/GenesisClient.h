@@ -2,6 +2,7 @@
 #define GENESIS_COMMON_NETWORKING_CLIENT_GENESISCLIENT_H
 
 #include <string>
+#include <iostream>
 
 #include "../packets/Packet.h"
 #include "../packets/PacketBuilder.h"
@@ -17,7 +18,8 @@ namespace Genesis::Common::Networking::Client {
 
 		public:
 
-			GenesisClient(boost::asio::io_service &io_service) : io_service(io_service), socket(io_service) {}
+			GenesisClient(boost::asio::io_service &io_service) 
+				: io_service(io_service), socket(io_service) {}
 
 			bool connect(std::string address, unsigned short port);
 
@@ -29,26 +31,45 @@ namespace Genesis::Common::Networking::Client {
 			 * @param packet
 			 *		The packet instance to write
 			 */
-			void write(Genesis::Common::Networking::Packets::Packet* packet) {
+			void write(Genesis::Common::Networking::Packets::Packet* packet, std::function<void(unsigned char*, unsigned int)> callback) {
+
+				// The length of the packet
+				unsigned int length = packet->length + 4;
 
 				// The array to write to
-				unsigned char* data = new unsigned char[packet->length];
+				unsigned char* data = new unsigned char[length];
+
+				// The request id
+				unsigned int request_id = (unsigned int) rand();
+
+				// Generate a unique request id
+				while (this->request_map.count(request_id) != 0)
+					request_id = (unsigned int) rand();
+				
+				// Store the request
+				this->request_map[request_id] = callback;
 
 				// Write the length
-				data[0] = (packet->length);
-				data[1] = (packet->length >> 8);
+				data[0] = (length);
+				data[1] = (length >> 8);
 
 				// Write the opcode
 				data[2] = (packet->opcode);
 				data[3] = (packet->opcode >> 8);
 
+				// Write the request id
+				data[4] = (request_id);
+				data[5] = (request_id >> 8);
+				data[6] = (request_id >> 16);
+				data[7] = (request_id >> 24);
+
 				// Write the data
 				for (int i = 0; i < packet->payload.size(); i++) {
-					data[4 + i] = packet->payload.at(i);
+					data[8 + i] = packet->payload.at(i);
 				}
 
 				// Write the data
-				boost::asio::async_write(this->socket, boost::asio::buffer(data, packet->length),
+				boost::asio::async_write(this->socket, boost::asio::buffer(data, length),
 					[&](const boost::system::error_code& error, unsigned int bytes_written) {
 
 						// If an error occurred, close the socket if it is still open
@@ -74,6 +95,9 @@ namespace Genesis::Common::Networking::Client {
 			}
 
 		private:
+
+			// A map containing the request ids, and their callbacks
+			std::map<unsigned int, std::function<void(unsigned char*, unsigned int)>> request_map;
 
 			// The on_receive lambda function, which is called whenever a new packet is received
 			std::function<void(unsigned char*, unsigned int)> receive_function;
