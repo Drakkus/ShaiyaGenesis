@@ -28,18 +28,23 @@ void Genesis::Auth::AuthServer::init() {
 	// The client instance
 	auto client = new Genesis::Common::Networking::Client::GenesisClient(io_service);
 
-	// Connect to the db server
-	if (!client->connect(dbserver_address, dbserver_port)) {
-		genesis_logger->error("Failed to connect to database server!");
-		exit(1);
-	}
-	genesis_logger->info("Connected to database server");
+	client->on_receive([](unsigned char* data, int bytes_read) {
+		genesis_logger->info("received data");
+	});
+	
+	// The database server connection thread
+	std::thread dbserver_thread(std::bind(&Genesis::Common::Networking::Client::GenesisClient::connect, client, dbserver_address, dbserver_port));
+
+	// Inform the user that we connected to the database server
+	genesis_logger->info("Successfully connected to the database server!");
 	
 	// The port for the io server to bind to
 	auto server_port = config_manager->get_value_or_default<unsigned short>("AuthServerPort", 30800);
 
 	// The io_server thread
 	std::thread thread(std::bind(&Genesis::Auth::Io::IoServer::initialise, this->io_server, server_port));
+
+	dbserver_thread.join();
 
 	// Wait for the thread to finish, and join back to the main program thread
 	thread.join();

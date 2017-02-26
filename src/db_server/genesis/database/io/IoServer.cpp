@@ -6,7 +6,7 @@
 #include <genesis/common/networking/packets/PacketBuilder.h>
 #include <genesis/common/packets/Opcodes.h>
 #include <genesis/common/logging/Logger.h>
-
+#include <genesis/common/database/DatabaseStructs.h>
 #include <boost/algorithm/string.hpp>
 #include <boost/format.hpp>
 
@@ -77,9 +77,17 @@ void IoServer::on_connect(Genesis::Common::Networking::Server::Session::ServerSe
 
 	// If the host doesn't match
 	if (!matches) {
-		genesis_logger->error(boost::str(boost::format("Connection denied from address: %s. Not whitelisted!") % session->get_remote_address().c_str()));
+
+		// Write an error if the host doesn't match
+		genesis_logger->error("Connection denied from address: %s. Not whitelisted!", {session->get_remote_address().c_str()});
+
+		// Close the session instance
 		session->close();
+		return;
 	}
+
+	// If the host does match
+	genesis_logger->info(boost::str(boost::format("Accepted connection from address: %s!") % session->get_remote_address().c_str()));
 }
 
 /**

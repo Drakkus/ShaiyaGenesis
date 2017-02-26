@@ -14,7 +14,7 @@ void Genesis::Common::Logging::Logger::initialise(std::string log_directory) {
 	this->message_builder << log_directory << "info.log";
 
 	// Open the information file
-	this->info_file.open(this->message_builder.str(), std::ios::out | std::ios::app);
+	this->info_file.open(this->message_builder.str(), std::ios::out);
 
 	// Clear the name builder
 	this->message_builder.str(std::string());
@@ -23,7 +23,7 @@ void Genesis::Common::Logging::Logger::initialise(std::string log_directory) {
 	this->message_builder << log_directory << "error.log";
 
 	// Open the error file
-	this->error_file.open(this->message_builder.str(), std::ios::out | std::ios::app);
+	this->error_file.open(this->message_builder.str(), std::ios::out);
 
 	// Clear the message builder
 	this->message_builder.str(std::string());
@@ -54,8 +54,7 @@ void Genesis::Common::Logging::Logger::initialise(std::string log_directory) {
 * @param message
 *		The message to write
 */
-Genesis::Common::Logging::Logger* Genesis::Common::Logging::Logger::error(const char* message)
-{
+Genesis::Common::Logging::Logger* Genesis::Common::Logging::Logger::error(const char* message) {
 
 	// Clear the message builder
 	this->message_builder.str(std::string());
@@ -79,8 +78,7 @@ Genesis::Common::Logging::Logger* Genesis::Common::Logging::Logger::error(const 
  * @param message
  *		The message to write
  */
-Genesis::Common::Logging::Logger* Genesis::Common::Logging::Logger::info(const char* message)
-{
+Genesis::Common::Logging::Logger* Genesis::Common::Logging::Logger::info(const char* message) {
 
 	// Clear the message builder
 	this->message_builder.str(std::string());

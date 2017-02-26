@@ -39,7 +39,7 @@ int main(int argc, char** argv) {
 	std::string config_path = (argc >= 2 ? argv[1] : "./config/auth_server.conf");
 
 	// The configuration error
-	std::string config_error;
+	std::string config_error; 
 
 	// Parse the configuration file
 	if (!config_manager->parse_file(config_path, config_error)) {
@@ -48,7 +48,7 @@ int main(int argc, char** argv) {
 	}
 
 	// Initialise the logger
-	genesis_logger->initialise(config_manager->get_value_or_default<std::string>("LogsDirectory", "./logs/"));
+	genesis_logger->initialise(config_manager->get_value_or_default<std::string>("LogsDirectory", "./logs/auth/"));
 
 	// Inform the user that the configuration had been parsed
 	genesis_logger->info("Authentication server configuration has been parsed successfully!");

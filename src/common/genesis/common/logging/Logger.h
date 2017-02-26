@@ -25,6 +25,8 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <boost/algorithm/string.hpp>
+#include <boost/format.hpp>
 
 /**
  * A utility class used for logging information and/or error messages to the console,
@@ -48,16 +50,53 @@ namespace Genesis::Common::Logging {
 			// Logs an information message
 			Logger* info(const char* message);
 			Logger* info(std::string message) { return this->info(message.c_str()); }
+			Logger* info(const char* message, std::initializer_list<const char*> args) {
+				
+				// The message
+				auto boost_msg = boost::format(message);
+
+				// Loop through the arguments
+				for (auto arg : args) {
+
+					// Define the message
+					boost_msg = boost_msg % arg;
+
+				}
+				
+				// Write the info message
+				return info(boost::str(boost_msg));
+			
+			}
 
 			// Logs an error message
 			Logger* error(const char* message);
 			Logger* error(std::string message) { return this->error(message.c_str()); }
+			Logger* error(const char* message, std::initializer_list<const char*> args) {
+				
+				// The message
+				auto boost_msg = boost::format(message);
 
-		private:
+				// Loop through the arguments
+				for (auto arg : args) {
+
+					// Define the message
+					boost_msg = boost_msg % arg;
+
+				}
+				
+				// Write the error message
+				return error(boost::str(boost_msg));
+			
+			}
 
 			// The log files
 			std::ofstream info_file;
 			std::ofstream error_file;
+		private:
+
+			// The log files
+			//std::ofstream info_file;
+			//std::ofstream error_file;
 
 			// Gets the current time
 			std::string get_current_time();

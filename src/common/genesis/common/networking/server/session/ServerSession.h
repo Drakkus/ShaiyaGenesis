@@ -4,6 +4,7 @@
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
 #include "../../packets/Packet.h"
+#include <iostream>
 
 /**
  * Represents a session that is currently connected to a server instance.
@@ -83,7 +84,7 @@ namespace Genesis::Common::Networking::Server::Session {
 				// Write the data
 				boost::asio::async_write(this->socket, boost::asio::buffer(data, packet->length),
 					[&](const boost::system::error_code& error, unsigned int bytes_written) {
-						
+
 						// If an error occurred, close the socket if it is still open
 						if (error && this->get_socket().is_open()) {
 							this->get_socket().shutdown(boost::asio::ip::tcp::socket::shutdown_both);

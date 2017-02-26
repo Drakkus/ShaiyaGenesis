@@ -50,7 +50,7 @@ int main(int argc, char** argv) {
 	}
 
 	// Initialise the logger
-	genesis_logger->initialise(config_manager->get_value_or_default<std::string>("LogsDirectory", "./logs/"));
+	genesis_logger->initialise(config_manager->get_value_or_default<std::string>("LogsDirectory", "./logs/database/"));
 
 	// Inform the user that the configuration had been parsed
 	genesis_logger->info("Database server configuration has been parsed successfully!");
