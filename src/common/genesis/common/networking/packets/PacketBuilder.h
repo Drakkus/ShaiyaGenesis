@@ -35,6 +35,13 @@ namespace Genesis::Common::Networking::Packets {
 				return this;
 			}
 
+			PacketBuilder* write_bytes(uint8_t* values, unsigned int length) {
+				for (int i = 0; i < length; i++) {
+					this->write_byte(values[i]);
+				}
+				return this;
+			}
+
 			/**
 			 * Writes a little-endian short to the payload
 			 *

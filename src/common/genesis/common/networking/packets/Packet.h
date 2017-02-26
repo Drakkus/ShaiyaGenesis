@@ -1,6 +1,8 @@
 #ifndef GENESIS_COMMON_NETWORKING_PACKETS_PACKET_H
 #define GENESIS_COMMON_NETWORKING_PACKETS_PACKET_H
 
+#include <vector>
+
 /**
  * Represents a packet structure, which is an incoming or outgoing message.
  */

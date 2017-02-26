@@ -7,20 +7,7 @@
  * through static casting.
  */
 namespace Genesis::Common::Database::DatabaseStructs {
-
-	// Represents an authentication request
-	struct Auth_AuthRequest {
-
-		// The name of the user
-		unsigned char username[19];
-
-		// The password of the user, as an MD5 hash
-		unsigned char password[32];
-
-		// The ip address of the user requesting authentication (IPV4)
-		unsigned char ip_address[15];
-	};
-
+	
 	// Represents the response to an {@code Auth_AuthRequest}
 	struct Auth_AuthResponse {
 

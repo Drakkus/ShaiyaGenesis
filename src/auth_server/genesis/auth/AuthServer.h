@@ -22,6 +22,8 @@
 #ifndef GENESIS_AUTH_AUTHSERVER_H
 #define GENESIS_AUTH_AUTHSERVER_H
 
+#include <genesis/common/networking/client/GenesisClient.h>
+
 // Forward declaration of the IoServer
 namespace Genesis::Auth::Io { class IoServer; }
 
@@ -43,10 +45,17 @@ namespace Genesis::Auth {
 			// Initialise the auth server
 			void init();
 
+			// Gets the database client instance
+			Genesis::Common::Networking::Client::GenesisClient* get_db_client() {
+				return this->db_client;
+			}
 		private:
 
 			// The IoServer instance
 			Genesis::Auth::Io::IoServer* io_server;
+
+			// The GenesisClient instance
+			Genesis::Common::Networking::Client::GenesisClient* db_client;
 	};
 }
 #endif

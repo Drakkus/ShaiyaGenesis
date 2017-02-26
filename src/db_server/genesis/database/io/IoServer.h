@@ -1,6 +1,9 @@
 #ifndef GENESIS_DATABASE_IO_IOSERVER_H
 #define GENESIS_DATABASE_IO_IOSERVER_H
 
+#include <genesis/database/io/packets/PacketManager.h>
+#include <genesis/database/io/packets/PacketHandler.h>
+
 #include <string>
 
 // Forward declaration of the ServerSession class
@@ -19,6 +22,9 @@ namespace Genesis::Database::Io {
 			bool initialise(unsigned short port);
 
 		private:
+
+			// The packet manager instance
+			Genesis::Database::Io::Packets::PacketManager* packet_manager = new Genesis::Database::Io::Packets::PacketManager();
 
 			// Called whenever a new connection is made
 			void on_connect(Genesis::Common::Networking::Server::Session::ServerSession* session);

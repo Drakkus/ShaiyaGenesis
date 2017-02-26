@@ -3,7 +3,6 @@
 
 #include <genesis/common/logging/Logger.h>
 #include <genesis/common/configuration/ConfigManager.h>
-#include <genesis/common/networking/client/GenesisClient.h>
 
 #include <thread>
 
@@ -26,14 +25,14 @@ void Genesis::Auth::AuthServer::init() {
 	boost::asio::io_service io_service;
 
 	// The client instance
-	auto client = new Genesis::Common::Networking::Client::GenesisClient(io_service);
+	this->db_client = new Genesis::Common::Networking::Client::GenesisClient(io_service);
 
-	client->on_receive([](unsigned char* data, int bytes_read) {
+	this->db_client->on_receive([](unsigned char* data, int bytes_read) {
 		genesis_logger->info("received data");
 	});
 	
 	// The database server connection thread
-	std::thread dbserver_thread(std::bind(&Genesis::Common::Networking::Client::GenesisClient::connect, client, dbserver_address, dbserver_port));
+	std::thread dbserver_thread(std::bind(&Genesis::Common::Networking::Client::GenesisClient::connect, this->db_client, dbserver_address, dbserver_port));
 
 	// Inform the user that we connected to the database server
 	genesis_logger->info("Successfully connected to the database server!");

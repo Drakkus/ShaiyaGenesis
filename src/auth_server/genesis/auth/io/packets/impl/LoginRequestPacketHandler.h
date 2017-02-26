@@ -3,7 +3,9 @@
 
 #include <genesis/auth/io/packets/PacketHandler.h>
 #include <genesis/common/networking/packets/PacketBuilder.h>
-
+#include <genesis/auth/AuthServer.h>
+#include <genesis/common/networking/client/GenesisClient.h>
+#include <genesis/common/database/structs/auth/AuthRequest.h>
 #include <iostream>
 #include <iomanip>
 
@@ -35,18 +37,35 @@ namespace Genesis::Auth::Io::Packets::Impl {
 			std::copy(data, data + 32, username);
 			std::copy(data + 32, data + length, password);
 
-			// Write the name
-			std::cout << "Name: " << username << std::endl;
-			std::cout << "Password: " << password << std::endl;
+			// The client instance
+			auto db_client = AuthServer::get_instance()->get_db_client();
+
+			// The auth request stucture
+			Genesis::Common::Database::Structs::Auth::AuthRequest auth_request;
+
+			// The session ip address
+			auto ip_address = session->get_remote_address().c_str();
+
+			// Define the details
+			std::copy(username, username + 32, auth_request.username);
+			std::copy(password, password + 32, auth_request.password);
+			std::copy(ip_address, ip_address + 15, auth_request.ip_address);
+
+			// The byte array
+			unsigned char struct_array[sizeof(auth_request)];
+			memcpy(struct_array, &auth_request, sizeof(auth_request));
 
 			// The packet builder instance
-			auto bldr = new Genesis::Common::Networking::Packets::PacketBuilder(opcode);
+			auto bldr = new Genesis::Common::Networking::Packets::PacketBuilder(1);
 
-			// Write the response
-			bldr->write_byte(0);
+			// Write the struct array
+			bldr->write_bytes(struct_array, sizeof(struct_array));
 
 			// Write the packet
-			session->write(bldr->to_packet());
+			db_client->write(bldr->to_packet());
+
+			// Delete the packet builder
+			delete bldr;
 		}
 	};
 }

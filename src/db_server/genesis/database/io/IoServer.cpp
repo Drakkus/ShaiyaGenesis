@@ -96,7 +96,20 @@ void IoServer::on_connect(Genesis::Common::Networking::Server::Session::ServerSe
  */
 void IoServer::on_receive(Genesis::Common::Networking::Server::Session::ServerSession* session, unsigned char* data, unsigned int bytes_read) {
 
+	// The packet length
+	unsigned short packet_length = ((data[0] & 0xFF) + ((data[1] & 0xFF) << 8));
 	
+	// The packet opcode
+	unsigned short packet_opcode = ((data[2] & 0xFF) + ((data[3] & 0xFF) << 8));
+
+	// The packet data
+	unsigned char* packet_data = (data + 4);
+
+	// The packet handler
+	auto handler = this->packet_manager->get_handler(packet_opcode);
+
+	// Handle the incoming packet
+	handler->handle(session, packet_length - 4, packet_opcode, packet_data);
 }
 
 /**
