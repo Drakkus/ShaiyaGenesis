@@ -14,8 +14,8 @@ namespace Genesis::Common::Database::Structs::Auth {
 		// The name of the user
 		unsigned char username[19];
 
-		// The password of the user, as an MD5 hash
-		unsigned char password[32];
+		// The password of the user, as an MD5 hash (with a null byte)
+		unsigned char password[33];
 
 		// The ip address of the user requesting authentication (IPV4)
 		unsigned char ip_address[15];

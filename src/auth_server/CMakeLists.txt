@@ -26,4 +26,5 @@ set_target_properties(auth_server PROPERTIES LINKER_LANGUAGE CXX)
 target_link_libraries(auth_server
 	PUBLIC
 		authserver-interface
-		common)
+		common
+		openssl)

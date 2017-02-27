@@ -5,9 +5,16 @@
 #include <genesis/common/networking/packets/PacketBuilder.h>
 #include <genesis/auth/AuthServer.h>
 #include <genesis/common/networking/client/GenesisClient.h>
+
 #include <genesis/common/database/structs/auth/AuthRequest.h>
+#include <genesis/common/database/structs/auth/AuthResponse.h>
+
 #include <iostream>
 #include <iomanip>
+#include <string>
+
+#include <genesis/common/cryptography/MD5.h>
+#include <genesis/common/packets/Opcodes.h>
 
 namespace Genesis::Auth::Io::Packets::Impl {
 	class LoginRequestPacketHandler : public PacketHandler {
@@ -30,12 +37,19 @@ namespace Genesis::Auth::Io::Packets::Impl {
 		void handle(Genesis::Common::Networking::Server::Session::ServerSession* session, unsigned int length, unsigned short opcode, unsigned char* data) override {
 
 			// The username and password
-			char* username = new char;
-			char* password = new char;
+			unsigned char username[19];
+			unsigned char password[32];
+			char hashed_password[33];
 
 			// Copy the username and password
-			std::copy(data, data + 32, username);
+			std::copy(data, data + 19, username);
 			std::copy(data + 32, data + length, password);
+			
+			// The MD5 digest
+         	std::string digest = md5((char*) password);
+
+         	// Copy the digest
+         	digest.copy(hashed_password, digest.length() + 1);
 
 			// The client instance
 			auto db_client = AuthServer::get_instance()->get_db_client();
@@ -47,8 +61,8 @@ namespace Genesis::Auth::Io::Packets::Impl {
 			auto ip_address = session->get_remote_address().c_str();
 
 			// Define the details
-			std::copy(username, username + 32, auth_request.username);
-			std::copy(password, password + 32, auth_request.password);
+			std::copy(username, username + 19, auth_request.username);
+			std::copy(hashed_password, hashed_password + 32, auth_request.password);
 			std::copy(ip_address, ip_address + 15, auth_request.ip_address);
 
 			// The byte array
@@ -56,7 +70,7 @@ namespace Genesis::Auth::Io::Packets::Impl {
 			memcpy(struct_array, &auth_request, sizeof(auth_request));
 
 			// The packet builder instance
-			auto bldr = new Genesis::Common::Networking::Packets::PacketBuilder(1);
+			auto bldr = new Genesis::Common::Networking::Packets::PacketBuilder(1); // TODO: Use Opcodes::AUTH_REQUEST or whatever from db common
 
 			// Write the struct array
 			bldr->write_bytes(struct_array, sizeof(struct_array));
@@ -64,13 +78,33 @@ namespace Genesis::Auth::Io::Packets::Impl {
 			// Write the packet
 			db_client->write(bldr->to_packet(), [&](unsigned char* data, unsigned int length) {
 				
-				std::cout << "Callback: Val " << (unsigned int) data[0] << std::endl;
-				
-				// Write the response from the database server, to the client
-				auto bldr = new Genesis::Common::Networking::Packets::PacketBuilder(opcode);
+				// The auth response stucture
+				Genesis::Common::Database::Structs::Auth::AuthResponse auth_response;
 
-				// Write the byte
-				bldr->write_byte(data[0]);
+				// Copy the data
+				memcpy(&auth_response, data, sizeof(auth_response));
+
+				// Write the response from the database server, to the client
+				auto bldr = new Genesis::Common::Networking::Packets::PacketBuilder(Genesis::Common::Packets::Opcodes::LOGIN_REQUEST);
+
+				// The status
+				int status = auth_response.status;
+
+				// Write the status
+				bldr->write_byte(status);
+
+				// If the status is 0
+				if (status == 0) {
+
+					// Write the user id
+					bldr->write_int(auth_response.user_id);
+
+					// Write the privilege level
+					bldr->write_byte(auth_response.privilege_level);
+
+					// Write the identity keys
+					bldr->write_bytes(auth_response.identity_keys, sizeof(auth_response.identity_keys));
+				}
 
 				// Write the packet
 				session->write(bldr->to_packet());
@@ -79,7 +113,7 @@ namespace Genesis::Auth::Io::Packets::Impl {
 				delete bldr;
 			});
 
-			// Delete the packet builder
+			// Delete the pointers
 			delete bldr;
 		}
 	};

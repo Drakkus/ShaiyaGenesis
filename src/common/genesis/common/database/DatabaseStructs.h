@@ -8,25 +8,6 @@
  */
 namespace Genesis::Common::Database::DatabaseStructs {
 	
-	// Represents the response to an {@code Auth_AuthRequest}
-	struct Auth_AuthResponse {
-
-		// The name of the user
-		unsigned char username[19];
-
-		// The user id
-		unsigned int user_id;
-
-		// The status of the user (result of authentication request, ie valid, banned, invalid password)
-		unsigned char status;
-
-		// The privilege level of the user (ie staff member values, Game Sage, Game Master, Administrator)
-		unsigned char privilege_level;
-
-		// The session keys, used for identify the user
-		unsigned char identity_keys[16];
-	};
-
 	// Represents an authentication request to a game server
 	struct Game_AuthRequest {
 
