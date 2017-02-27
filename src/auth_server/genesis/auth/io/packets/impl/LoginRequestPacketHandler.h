@@ -46,10 +46,10 @@ namespace Genesis::Auth::Io::Packets::Impl {
 			std::copy(data + 32, data + length, password);
 			
 			// The MD5 digest
-         	std::string digest = md5((char*) password);
+			std::string digest = md5((char*) password);
 
          	// Copy the digest
-         	digest.copy(hashed_password, digest.length() + 1);
+			digest.copy(hashed_password, digest.length() + 1);
 
 			// The client instance
 			auto db_client = AuthServer::get_instance()->get_db_client();

@@ -16,6 +16,7 @@ The following libraries are required to build Shaiya Genesis:
 
 ```
 apt-get install libboost-all-dev libmysql++-dev libssl-dev
+git clone https://github.com/TristonPlummer/ShaiyaGenesis
 cmake -B./build/ -H. && cd build && make
 ```
 	
