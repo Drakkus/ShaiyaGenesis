@@ -3,6 +3,7 @@
 
 #include <string>
 #include <iostream>
+#include <mutex>
 
 #include "../packets/Packet.h"
 #include "../packets/PacketBuilder.h"
@@ -42,6 +43,9 @@ namespace Genesis::Common::Networking::Client {
 				// The request id
 				unsigned int request_id = (unsigned int) rand();
 
+				// Lock the mutex
+				this->mutex.lock();
+
 				// Generate a unique request id
 				while (this->request_map.count(request_id) != 0)
 					request_id = (unsigned int) rand();
@@ -49,6 +53,9 @@ namespace Genesis::Common::Networking::Client {
 				// Store the request
 				this->request_map[request_id] = callback;
 
+				// Unlock the mutex
+				this->mutex.unlock();
+				
 				// Write the length
 				data[0] = (length);
 				data[1] = (length >> 8);
@@ -95,6 +102,9 @@ namespace Genesis::Common::Networking::Client {
 			}
 
 		private:
+
+			// The mutex
+			std::mutex mutex;
 
 			// A map containing the request ids, and their callbacks
 			std::map<unsigned int, std::function<void(unsigned char*, unsigned int)>> request_map;

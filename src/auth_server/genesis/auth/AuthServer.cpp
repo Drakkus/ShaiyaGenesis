@@ -5,6 +5,7 @@
 #include <genesis/common/configuration/ConfigManager.h>
 
 #include <thread>
+#include <chrono>
 
 /**
  * Initialise the authentication server
@@ -27,24 +28,76 @@ void Genesis::Auth::AuthServer::init() {
 	// The client instance
 	this->db_client = new Genesis::Common::Networking::Client::GenesisClient(io_service);
 
-	this->db_client->on_receive([](unsigned char* data, int bytes_read) {
-		genesis_logger->info("received data");
-	});
-	
 	// The database server connection thread
 	std::thread dbserver_thread(std::bind(&Genesis::Common::Networking::Client::GenesisClient::connect, this->db_client, dbserver_address, dbserver_port));
 
 	// Inform the user that we connected to the database server
 	genesis_logger->info("Successfully connected to the database server!");
-	
+
+	// The server list update thread
+	std::thread list_thread(std::bind(&Genesis::Auth::AuthServer::update_server_list, this));
+
 	// The port for the io server to bind to
 	auto server_port = config_manager->get_value_or_default<unsigned short>("AuthServerPort", 30800);
 
 	// The io_server thread
 	std::thread thread(std::bind(&Genesis::Auth::Io::IoServer::initialise, this->io_server, server_port));
 
+	// Wait for the update list thread to finish
+	list_thread.join();
+	
+	// Wait for the database connection to finish
 	dbserver_thread.join();
 
 	// Wait for the thread to finish, and join back to the main program thread
 	thread.join();
+}
+
+void Genesis::Auth::AuthServer::update_server_list() {
+
+	// Wait 2 seconds to connect to the database server
+	std::this_thread::sleep_for (std::chrono::seconds(2));
+
+	// Loop and update the server list every 30s
+	while (true) {
+
+		// The packet builder instance, to load the server list data
+		auto bldr = new Genesis::Common::Networking::Packets::PacketBuilder(2);
+
+		// Write the packet
+		db_client->write(bldr->to_packet(), [&](unsigned char* data, unsigned int length) {
+		
+			// The number of servers to choose from
+			unsigned char server_count = (data[0] & 0xFF);
+
+			// Lock the server list mutex
+			this->list_mutex.lock();
+
+			// Clear the server list vector
+			this->servers.clear();
+
+			// Loop through the servers
+			for (int i = 0; i < server_count; i++) {
+
+				// The server stucture
+				Genesis::Common::Database::Structs::Auth::Server server;
+
+				// Copy the data
+				memcpy(&server, (data + 1 + (i * sizeof(server))), sizeof(server));
+
+				// Define the server
+				this->servers.push_back(server);	
+			}
+
+			// Unlock the mutex
+			this->list_mutex.unlock();
+		});
+
+		// Delete the packet builder instance
+		delete bldr;
+
+		// Wait 30 seconds
+		std::this_thread::sleep_for (std::chrono::seconds(30));
+	}
+
 }

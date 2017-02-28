@@ -87,6 +87,9 @@ void Genesis::Common::Networking::Client::GenesisClient::handle_read(unsigned ch
 	// The packet data
 	unsigned char* packet_data = (data + 8);
 
+	// Lock the mutex
+	this->mutex.lock();
+
 	// Call the receive function
 	if (this->request_map.count(request_id) != 0) {
 
@@ -100,6 +103,9 @@ void Genesis::Common::Networking::Client::GenesisClient::handle_read(unsigned ch
 		callback(packet_data, packet_length - 8);
 	}
 
+	// Unlock the mutex
+	this->mutex.unlock();
+	
 	// Begin reading some data
 	this->socket.async_read_some(boost::asio::buffer(this->data, MAX_PACKET_LENGTH), boost::bind(&Genesis::Common::Networking::Client::GenesisClient::handle_read, this, this->data, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred));
 }

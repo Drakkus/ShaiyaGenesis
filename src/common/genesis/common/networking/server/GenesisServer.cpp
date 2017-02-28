@@ -102,7 +102,7 @@ void GenesisServer::handle_accept(Genesis::Common::Networking::Server::Session::
 void GenesisServer::handle_read(Genesis::Common::Networking::Server::Session::ServerSession* session, uint8_t* data, const boost::system::error_code &error, unsigned int bytes_read) {
 
 	// If an error was thrown, terminate the session and discontinue
-	if (error) {
+	if (error && bytes_read == 0) {
 		this->terminate_function(session);
 		return;
 	}

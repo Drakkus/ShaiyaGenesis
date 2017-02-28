@@ -51,12 +51,17 @@ namespace Genesis::Common::Networking::Packets {
 			 * @returns
 			 *		This instance, for method chaining
 			 */
-			PacketBuilder* write_short(unsigned short value) {
-				write_byte((uint8_t) value >> 8);
+			PacketBuilder* write_short_le(unsigned short value) {
+				write_byte((uint8_t) (value >> 8) & 0xFF);
 				write_byte((uint8_t) value);
 				return this;
 			}
 
+			PacketBuilder* write_short(unsigned short value) {
+				write_byte((uint8_t) value);
+				write_byte((uint8_t) (value >> 8) & 0xFF);
+				return this;
+			}
 			/**
 			 * Writes a little-endian integer to the payload
 			 *
@@ -66,6 +71,14 @@ namespace Genesis::Common::Networking::Packets {
 			 * @returns
 			 *		This instance, for method chaining
 			 */
+			PacketBuilder* write_int_le(unsigned int value) {
+				write_byte((uint8_t) (value >> 24) & 0xFF);
+				write_byte((uint8_t) (value >> 16) & 0xFF);
+				write_byte((uint8_t) (value >> 8) & 0xFF);
+				write_byte((uint8_t) value & 0xFF);
+				return this;
+			}
+
 			PacketBuilder* write_int(unsigned int value) {
 				write_byte((uint8_t) value & 0xFF);
 				write_byte((uint8_t) (value >> 8) & 0xFF);

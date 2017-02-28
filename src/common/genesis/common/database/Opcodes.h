@@ -17,9 +17,15 @@ namespace Genesis::Common::Database::Opcodes {
 	unsigned short USER_AUTH_REQUEST = 1;
 
 	/**
+	 * Represents a packet set from the authentication server to the database server,
+	 * requesting the server list.
+	 */
+	unsigned short SERVER_LIST = 2;
+
+	/**
 	 *
 	 */
-	unsigned short USER_GAME_CONNECT = 2;
+	unsigned short USER_GAME_CONNECT = 3;
 }
 
 #endif

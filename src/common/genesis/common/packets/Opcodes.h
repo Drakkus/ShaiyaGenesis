@@ -34,6 +34,9 @@ namespace Genesis::Common::Packets::Opcodes {
 	/* The ping packet sent by the client, which is used to ensure the client is still connected */
 	const unsigned short PING = 0x03;
 
+	/* Called whenever a login session is terminated, either through ALT + F4, or the "Quit Game" button */
+	const unsigned short LOGIN_TERMINATE = 0x010B;
+
 	/* The login handshake is the first packet sent from the server, to the client, and is responsible
 	for defining the values used for the encryption algorithm. */
 	const unsigned short LOGIN_HANDSHAKE = 0xA101;

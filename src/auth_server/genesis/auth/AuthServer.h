@@ -23,6 +23,10 @@
 #define GENESIS_AUTH_AUTHSERVER_H
 
 #include <genesis/common/networking/client/GenesisClient.h>
+#include <genesis/common/database/structs/auth/Server.h>
+
+#include <vector>
+#include <mutex>
 
 // Forward declaration of the IoServer
 namespace Genesis::Auth::Io { class IoServer; }
@@ -45,11 +49,31 @@ namespace Genesis::Auth {
 			// Initialise the auth server
 			void init();
 
+			// Update the server list
+			void update_server_list();
+
 			// Gets the database client instance
 			Genesis::Common::Networking::Client::GenesisClient* get_db_client() {
 				return this->db_client;
 			}
+
+			// Gets the server list
+			std::vector<Genesis::Common::Database::Structs::Auth::Server>* get_servers() {
+				return &servers;
+			}
+			
+			// Get the server list mutex
+			std::mutex* get_list_mutex() {
+				return &list_mutex;
+			}
+			
 		private:
+
+			// The server list mutex
+			std::mutex list_mutex;
+
+			// The server data
+			std::vector<Genesis::Common::Database::Structs::Auth::Server> servers;
 
 			// The IoServer instance
 			Genesis::Auth::Io::IoServer* io_server;

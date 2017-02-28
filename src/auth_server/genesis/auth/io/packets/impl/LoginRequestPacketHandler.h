@@ -8,16 +8,77 @@
 
 #include <genesis/common/database/structs/auth/AuthRequest.h>
 #include <genesis/common/database/structs/auth/AuthResponse.h>
+#include <genesis/common/database/structs/auth/Server.h>
+
+#include <genesis/common/database/Opcodes.h>
 
 #include <iostream>
 #include <iomanip>
 #include <string>
+#include <thread>
 
 #include <genesis/common/cryptography/MD5.h>
 #include <genesis/common/packets/Opcodes.h>
 
 namespace Genesis::Auth::Io::Packets::Impl {
 	class LoginRequestPacketHandler : public PacketHandler {
+
+		/**
+		 * Handles a server list response, and sends the server list to the user
+		 *
+		 * @param session
+		 *		The session instance
+		 *
+		 * @param data
+		 *		The server list data, returned by the database server
+		 */
+		void handle_server_list(Genesis::Common::Networking::Server::Session::ServerSession* session) {
+
+			// The packet builder instance
+			auto bldr = new Genesis::Common::Networking::Packets::PacketBuilder(Genesis::Common::Packets::Opcodes::SERVER_LIST_DETAILS);
+
+			// Lock the mutex
+			Genesis::Auth::AuthServer::get_instance()->get_list_mutex()->lock();
+
+			// The servers instance
+			auto servers = Genesis::Auth::AuthServer::get_instance()->get_servers();
+
+			// The number of servers to choose from
+			unsigned char server_count = servers->size();
+
+			// Write the server count
+			bldr->write_byte(server_count);
+
+			// Loop through the servers
+			for (int i = 0; i < server_count; i++) {
+
+				// The server instance
+				auto server = servers->at(i);
+
+				// Write the server id
+				bldr->write_short(server.server_id);
+
+				// Write the server status
+				bldr->write_short(server.status);
+
+				// Write the server population
+				bldr->write_short(server.population);
+
+				// Write the server name
+				for (int i = 0; i < sizeof(server.server_name); i++) {
+					bldr->write_byte(server.server_name[i]);
+				}
+			}
+
+			// Unlock the mutex
+			Genesis::Auth::AuthServer::get_instance()->get_list_mutex()->unlock();
+
+			// Write the packet to the client
+			session->write(bldr->to_packet());
+
+			// Delete the packet builder instance
+			delete bldr;
+		}
 
 		/**
 		 * Handles an incoming login request
@@ -36,6 +97,10 @@ namespace Genesis::Auth::Io::Packets::Impl {
 		 */
 		void handle(Genesis::Common::Networking::Server::Session::ServerSession* session, unsigned int length, unsigned short opcode, unsigned char* data) override {
 
+			// If the packet is not the correct length
+			if (length != 48)
+				return;
+			
 			// The username and password
 			unsigned char username[19];
 			unsigned char password[32];
@@ -50,6 +115,10 @@ namespace Genesis::Auth::Io::Packets::Impl {
 
          	// Copy the digest
 			digest.copy(hashed_password, digest.length() + 1);
+
+			// Define null terminators
+			username[18] = '\0';
+			hashed_password[32] = '\0';
 
 			// The client instance
 			auto db_client = AuthServer::get_instance()->get_db_client();
@@ -70,7 +139,7 @@ namespace Genesis::Auth::Io::Packets::Impl {
 			memcpy(struct_array, &auth_request, sizeof(auth_request));
 
 			// The packet builder instance
-			auto bldr = new Genesis::Common::Networking::Packets::PacketBuilder(1); // TODO: Use Opcodes::AUTH_REQUEST or whatever from db common
+			auto bldr = new Genesis::Common::Networking::Packets::PacketBuilder(Genesis::Common::Database::Opcodes::USER_AUTH_REQUEST);
 
 			// Write the struct array
 			bldr->write_bytes(struct_array, sizeof(struct_array));
@@ -104,6 +173,9 @@ namespace Genesis::Auth::Io::Packets::Impl {
 
 					// Write the identity keys
 					bldr->write_bytes(auth_response.identity_keys, sizeof(auth_response.identity_keys));
+
+					// Handle the server list processing
+					handle_server_list(session);
 				}
 
 				// Write the packet

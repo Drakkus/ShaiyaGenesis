@@ -89,14 +89,11 @@ namespace Genesis::Common::Logging {
 			
 			}
 
-			// The log files
-			std::ofstream info_file;
-			std::ofstream error_file;
 		private:
 
 			// The log files
-			//std::ofstream info_file;
-			//std::ofstream error_file;
+			std::ofstream info_file;
+			std::ofstream error_file;
 
 			// Gets the current time
 			std::string get_current_time();

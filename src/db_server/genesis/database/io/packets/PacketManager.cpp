@@ -17,6 +17,7 @@ Genesis::Database::Io::Packets::PacketManager::PacketManager() {
 
 	// Define the database server packet handlers
 	this->handlers[Opcodes::USER_AUTH_REQUEST] = new Genesis::Database::Io::Packets::Impl::UserAuthRequestHandler();
+	this->handlers[Opcodes::SERVER_LIST] = new Genesis::Database::Io::Packets::Impl::ServerListRequestHandler();
 }
 
 /**

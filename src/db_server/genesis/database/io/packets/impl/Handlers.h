@@ -4,5 +4,6 @@
 // A header to include all packet handlers
 #include "DefaultPacketHandler.h"
 #include "UserAuthRequestHandler.h"
+#include "ServerListRequestHandler.h"
 
 #endif

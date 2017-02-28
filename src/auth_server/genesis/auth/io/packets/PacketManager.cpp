@@ -16,8 +16,10 @@ Genesis::Auth::Io::Packets::PacketManager::PacketManager() {
 	this->handlers[0] = new Genesis::Auth::Io::Packets::Impl::DefaultPacketHandler();
 
 	// Define the packet handlers
+	this->handlers[Opcodes::LOGIN_TERMINATE] = new Genesis::Auth::Io::Packets::Impl::ConnectionTerminatedPacketHandler();
 	this->handlers[Opcodes::LOGIN_HANDSHAKE] = new Genesis::Auth::Io::Packets::Impl::HandshakePacketHandler();
 	this->handlers[Opcodes::LOGIN_REQUEST] = new Genesis::Auth::Io::Packets::Impl::LoginRequestPacketHandler();
+	this->handlers[Opcodes::SELECT_GAME_SERVER] = new Genesis::Auth::Io::Packets::Impl::ServerSelectPacketHandler();
 }
 
 /**

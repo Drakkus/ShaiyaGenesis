@@ -5,5 +5,7 @@
 #include "DefaultPacketHandler.h"
 #include "HandshakePacketHandler.h"
 #include "LoginRequestPacketHandler.h"
+#include "ServerSelectPacketHandler.h"
+#include "ConnectionTerminatedPacketHandler.h"
 
 #endif

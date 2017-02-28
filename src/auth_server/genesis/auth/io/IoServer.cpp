@@ -107,5 +107,5 @@ void IoServer::on_send(char* name) {
  * an existing connection that has had it's connection terminated.
  */
 void IoServer::on_terminate(Genesis::Common::Networking::Server::Session::ServerSession* session) {
-	std::cout << "terminating" << std::endl;
+	
 }
