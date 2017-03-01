@@ -19,15 +19,16 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#ifndef GENESIS_DATABASE_IO_PACKETS_IMPL_DEFAULTPACKETHANDLER_H
-#define GENESIS_DATABASE_IO_PACKETS_IMPL_DEFAULTPACKETHANDLER_H
+#ifndef GENESIS_DATABASE_IO_PACKETS_IMPL_DELETESESSIONREQUESTHANDLER_H
+#define GENESIS_DATABASE_IO_PACKETS_IMPL_DELETESESSIONREQUESTHANDLER_H
 
 #include <genesis/database/io/packets/PacketHandler.h>
+#include <genesis/database/DatabaseServer.h>
 #include <iostream>
-#include <iomanip>
+#include <string>
 
 namespace Genesis::Database::Io::Packets::Impl {
-	class DefaultPacketHandler : public PacketHandler {
+	class DeleteSessionRequestHandler : public PacketHandler {
 
 		/**
 		 * Handles an undefined packet
@@ -47,23 +48,32 @@ namespace Genesis::Database::Io::Packets::Impl {
 		void handle(Genesis::Common::Networking::Server::Session::ServerSession* session, 
 				unsigned int length, unsigned short opcode, unsigned int request_id, unsigned char* data) override {
 
-			// The current state of the standard output
-			std::ios old_state(nullptr);
-			old_state.copyfmt(std::cout);
+			// The session key
+			char session_key[17];
 
-			// Inform the user that an undefined packet is received
-			std::cout << "[Unhandled packet, Opcode: " << opcode << ", Length: " << length << ", Data: ";
+			// Populate the key
+			std::copy(data, data + sizeof(session_key), session_key);
 
-			// Write the packet data, in hex form
-			for (int i = 0; i < length; i++) {
-				std::cout << std::setw(2) << std::setfill('0') << std::hex << (int)data[i] << " ";
-			}
+			// Add a null terminator
+			session_key[sizeof(session_key) - 1] = '\0';
 
-			// End the information message
-			std::cout << "]" << std::endl;
+			// The session key
+			std::string key(session_key);
 
-			// Restore the standard output state
-			std::cout.copyfmt(old_state);
+			// The MySQL connection
+			auto connection = Genesis::Database::DatabaseServer::get_instance()->get_connector()->get_connection();
+
+			// The statement and result instances
+			auto statement = connection->prepareStatement("DELETE FROM genesis_userdata.sessions WHERE identity_keys = ?");
+
+			// Define the identity key
+			statement->setString(1, key);
+
+			// Execute the statement
+			statement->execute();
+
+			// Delete the statement instance
+			delete statement;
 		}
 	};
 }

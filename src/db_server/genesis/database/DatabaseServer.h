@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2016 Shaiya Genesis <http://www.shaiyagenesis.com/>
+* Copyright (C) 2017 Shaiya Genesis <http://www.shaiyagenesis.com/>
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal

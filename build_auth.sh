@@ -1,0 +1,1 @@
+rm -rf build && cmake -DGAME_SERVER=0 -DDB_SERVER=0 -B"./build/" -H"." && cd build && make

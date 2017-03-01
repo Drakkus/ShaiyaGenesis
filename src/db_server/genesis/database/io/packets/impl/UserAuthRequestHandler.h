@@ -1,3 +1,24 @@
+/*
+* Copyright (C) 2017 Shaiya Genesis <http://www.shaiyagenesis.com/>
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+
+* The above copyright notice and this permission notice shall be included in all
+* copies or substantial portions of the Software.
+
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*/
 #ifndef GENESIS_DATABASE_IO_PACKETS_IMPL_USERAUTHREQUESTHANDLER_H
 #define GENESIS_DATABASE_IO_PACKETS_IMPL_USERAUTHREQUESTHANDLER_H
 
@@ -78,12 +99,19 @@ namespace Genesis::Database::Io::Packets::Impl {
 				int user_id = result->getInt("$user_id");
 				unsigned char status = (unsigned char) result->getInt("$result");
 				unsigned char privilege_level = (unsigned char) result->getInt("$privilege_level");
+				std::string id_keys = (std::string) result->getString("$identity_keys");
 
 				// Define the values
 				auth_response.user_id = user_id;
 				auth_response.status = status;
 				auth_response.privilege_level = privilege_level;
 
+				// The identity keys
+				auto keys = id_keys.c_str();
+
+				// Define the identity keys
+				std::copy(keys, keys + sizeof(auth_response.identity_keys), auth_response.identity_keys);
+				
 				// The byte array
 				unsigned char struct_array[sizeof(auth_response)];
 				memcpy(struct_array, &auth_response, sizeof(auth_response));

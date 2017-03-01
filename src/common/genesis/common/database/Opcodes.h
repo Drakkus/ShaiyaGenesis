@@ -1,3 +1,24 @@
+/*
+* Copyright (C) 2017 Shaiya Genesis <http://www.shaiyagenesis.com/>
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+
+* The above copyright notice and this permission notice shall be included in all
+* copies or substantial portions of the Software.
+
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*/
 #ifndef GENESIS_COMMON_DATABASE_OPCODES_H
 #define GENESIS_COMMON_DATABASE_OPCODES_H
 
@@ -14,18 +35,26 @@ namespace Genesis::Common::Database::Opcodes {
 	 * The client sends the username requesting to login, and an MD5 hash of their password.
 	 * The database server responds with an instance of {@link DatabaseStructs::AccountInfo}.
 	 */
-	unsigned short USER_AUTH_REQUEST = 1;
+	const unsigned short USER_AUTH_REQUEST = 1;
 
 	/**
-	 * Represents a packet set from the authentication server to the database server,
+	 * Represents a packet sent from the authentication server to the database server,
 	 * requesting the server list.
 	 */
-	unsigned short SERVER_LIST = 2;
+	const unsigned short SERVER_LIST = 2;
 
 	/**
-	 *
+	 * Represents a packet sent from the authentication server, informing the
+	 * database server that a session should be deleted
 	 */
-	unsigned short USER_GAME_CONNECT = 3;
+	const unsigned short DELETE_SESSION = 3;
+	
+	/**
+	 * Represents a packet set from the game server, informing the database
+	 * server that a user has connected to the game server, and that it should
+	 * verify the session.
+	 */
+	const unsigned short USER_GAME_CONNECT = 4;
 }
 
 #endif
