@@ -19,25 +19,28 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#include <genesis/auth/AuthServer.h>
-#include <genesis/auth/io/IoServer.h>
+#include <genesis/game/world/GameWorld.h>
+#include <genesis/game/world/pulse/task/Task.h>
+#include <genesis/game/world/pulse/task/impl/LoadPlayerTask.h>
 
 #include <genesis/common/logging/Logger.h>
 #include <genesis/common/configuration/ConfigManager.h>
+#include <genesis/common/database/Opcodes.h>
 
 #include <thread>
 #include <chrono>
+#include <iostream>
+
+// Use the world namespace
+using namespace Genesis::Game::World;
 
 /**
- * Initialise the authentication server
+ * Initialise the game world
  */
-void Genesis::Auth::AuthServer::init() {
+void GameWorld::init() {
 
-	// Inform the user that the authentication server is being initialised
-	genesis_logger->info("Initialising authentication server...");
-
-	// The io server instance
-	this->io_server = new Genesis::Auth::Io::IoServer();
+	// Inform the user that the game server is being initialised
+	genesis_logger->info("Initialising game world...");
 
 	// The address and port of the database server
 	auto dbserver_address = config_manager->get_value_or_default<std::string>("DbServerAddress", "127.0.0.1");
@@ -49,23 +52,23 @@ void Genesis::Auth::AuthServer::init() {
 	// The client instance
 	this->db_client = new Genesis::Common::Networking::Client::GenesisClient(io_service);
 
+	// The game pulse handler instance
+	this->pulse_handler = new Genesis::Game::World::Pulse::GamePulseHandler();
+
 	// The database server connection thread
 	std::thread dbserver_thread(std::bind(&Genesis::Common::Networking::Client::GenesisClient::connect, this->db_client, dbserver_address, dbserver_port));
 
 	// Inform the user that we connected to the database server
 	genesis_logger->info("Successfully connected to the database server!");
 
-	// The server list update thread
-	std::thread list_thread(std::bind(&Genesis::Auth::AuthServer::update_server_list, this));
+	// Start the game pulse handler
+	pulse_handler->start();
 
 	// The port for the io server to bind to
-	auto server_port = config_manager->get_value_or_default<unsigned short>("AuthServerPort", 30800);
+	auto server_port = config_manager->get_value_or_default<unsigned short>("GameServerPort", 30810);
 
 	// The io_server thread
-	std::thread thread(std::bind(&Genesis::Auth::Io::IoServer::initialise, this->io_server, server_port));
-
-	// Wait for the update list thread to finish
-	list_thread.join();
+	std::thread thread(std::bind(&Genesis::Game::Io::IoServer::initialise, this->io_server, server_port));
 	
 	// Wait for the database connection to finish
 	dbserver_thread.join();
@@ -74,54 +77,14 @@ void Genesis::Auth::AuthServer::init() {
 	thread.join();
 }
 
-void Genesis::Auth::AuthServer::update_server_list() {
+/**
+ * Attempts to load the player into the game world.
+ *
+ * @param player
+ *		The player instance
+ */
+void GameWorld::load_player(Genesis::Game::Model::Entity::Player::Player* player) {
 
-	// The server update delay
-	int update_delay = config_manager->get_value_or_default<unsigned int>("WorldStatusUpdateDelay", 30);
-
-	// Wait 2 seconds to connect to the database server
-	std::this_thread::sleep_for(std::chrono::seconds(2));
-
-	// Loop and update the server list every 30s
-	while (true) {
-
-		// The packet builder instance, to load the server list data
-		auto bldr = new Genesis::Common::Networking::Packets::PacketBuilder(2);
-
-		// Write the packet
-		db_client->write(bldr->to_packet(), [&](unsigned char* data, unsigned int length) {
-		
-			// The number of servers to choose from
-			unsigned char server_count = (data[0] & 0xFF);
-
-			// Lock the server list mutex
-			this->list_mutex.lock();
-
-			// Clear the server list vector
-			this->servers.clear();
-
-			// Loop through the servers
-			for (int i = 0; i < server_count; i++) {
-
-				// The server stucture
-				Genesis::Common::Database::Structs::Auth::Server server;
-
-				// Copy the data
-				memcpy(&server, (data + 1 + (i * sizeof(server))), sizeof(server));
-
-				// Define the server
-				this->servers.push_back(server);	
-			}
-
-			// Unlock the mutex
-			this->list_mutex.unlock();
-		});
-
-		// Delete the packet builder instance
-		delete bldr;
-
-		// Wait the update delay
-		std::this_thread::sleep_for(std::chrono::seconds(update_delay));
-	}
-
+	// Push the task to the pulse handler
+	pulse_handler->offer(new Genesis::Game::World::Pulse::Task::Impl::LoadPlayerTask(player));
 }

@@ -19,26 +19,18 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#include <genesis/database/io/IoServer.h>
+#include <genesis/game/io/IoServer.h>
 
 #include <genesis/common/networking/server/GenesisServer.h>
-#include <genesis/common/configuration/ConfigManager.h>
 #include <genesis/common/networking/server/session/ServerSession.h>
 #include <genesis/common/networking/packets/PacketBuilder.h>
 #include <genesis/common/packets/Opcodes.h>
-#include <genesis/common/logging/Logger.h>
-#include <genesis/common/database/DatabaseStructs.h>
-#include <boost/algorithm/string.hpp>
-#include <boost/format.hpp>
-
-#include <vector>
-#include <string>
 #include <iostream>
 #include <functional>
 #include <iomanip>
 
 // An alias for the name space
-using namespace Genesis::Database::Io;
+using namespace Genesis::Game::Io;
 
 /**
  * Initialise the IoServer instance, and listen on a specified address and port.
@@ -78,37 +70,6 @@ bool IoServer::initialise(unsigned short port) {
  */
 void IoServer::on_connect(Genesis::Common::Networking::Server::Session::ServerSession* session) {
 
-	// The list of allowed hosts
-	auto hosts = config_manager->get_value_or_default<std::string>("AllowedHosts", "127.0.0.2");
-
-	// A vector containing the allowed hosts
-	std::vector<std::string> allowed_hosts;
-
-	// Split the string
-	boost::split(allowed_hosts, hosts, boost::is_any_of(";"));
-
-	// If the host matches
-	bool matches = false;
-
-	// Loop through the hosts
-	for (auto &&host : allowed_hosts) {
-		if (session->get_remote_address() == host)
-			matches = true;
-	}
-
-	// If the host doesn't match
-	if (!matches) {
-
-		// Write an error if the host doesn't match
-		genesis_logger->error("Connection denied from address: %s. Not whitelisted!", {session->get_remote_address().c_str()});
-
-		// Close the session instance
-		session->close();
-		return;
-	}
-
-	// If the host does match
-	genesis_logger->info(boost::str(boost::format("Accepted connection from address: %s!") % session->get_remote_address().c_str()));
 }
 
 /**
@@ -119,21 +80,18 @@ bool IoServer::on_receive(Genesis::Common::Networking::Server::Session::ServerSe
 
 	// The packet length
 	unsigned short packet_length = ((data[0] & 0xFF) + ((data[1] & 0xFF) << 8));
-	
+
 	// The packet opcode
 	unsigned short packet_opcode = ((data[2] & 0xFF) + ((data[3] & 0xFF) << 8));
 
-	// The request id
-	unsigned int request_id = ((data[4] & 0xFF) + ((data[5] & 0xFF) << 8) + ((data[6] & 0xFF) << 16) + ((data[7] & 0xFF) << 24));
-
 	// The packet data
-	unsigned char* packet_data = (data + 8);
+	unsigned char* packet_data = (data + 4);
 
 	// The packet handler
 	auto handler = this->packet_manager->get_handler(packet_opcode);
 
 	// Handle the incoming packet
-	return handler->handle(session, packet_length - 8, packet_opcode, request_id, packet_data);
+	return handler->handle(session, packet_length - 4, packet_opcode, packet_data);
 }
 
 /**
@@ -141,7 +99,7 @@ bool IoServer::on_receive(Genesis::Common::Networking::Server::Session::ServerSe
  * an outgoing packet from an existing connection.
  */
 void IoServer::on_send(char* name) {
-
+	std::cout << "sending, " << name << std::endl;
 }
 
 /**
@@ -149,5 +107,5 @@ void IoServer::on_send(char* name) {
  * an existing connection that has had it's connection terminated.
  */
 void IoServer::on_terminate(Genesis::Common::Networking::Server::Session::ServerSession* session) {
-	
+	std::cout << "session termination called" << std::endl;
 }

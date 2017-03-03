@@ -1,0 +1,1 @@
+rm -rf build && cmake -DDB_SERVER=0 -DAUTH_SERVER=0 -B"./build/" -H"." && cd build && make

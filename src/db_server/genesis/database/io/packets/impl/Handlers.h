@@ -27,5 +27,7 @@
 #include "UserAuthRequestHandler.h"
 #include "ServerListRequestHandler.h"
 #include "DeleteSessionRequestHandler.h"
+#include "UserGameConnectRequestHandler.h"
+#include "GameUserLoadRequestHandler.h"
 
 #endif

@@ -23,6 +23,7 @@
 #include <iostream>
 #include <boost/bind.hpp>
 #include "session/ServerSession.h"
+#include <typeinfo>
 
 using namespace Genesis::Common::Networking::Server;
 
@@ -129,8 +130,9 @@ void GenesisServer::handle_read(Genesis::Common::Networking::Server::Session::Se
 	}
 
 	// Pass the data to the receive function
-	this->receive_function(session, data, bytes_read);
+	if (this->receive_function(session, data, bytes_read)) {
 
-	// Begin reading incoming packets
-	session->get_socket().async_read_some(boost::asio::buffer(session->get_buffer(), MAX_PACKET_LENGTH), boost::bind(&GenesisServer::handle_read, this, session, session->get_buffer(), boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred));
+		// Begin reading incoming packets
+		session->get_socket().async_read_some(boost::asio::buffer(session->get_buffer(), MAX_PACKET_LENGTH), boost::bind(&GenesisServer::handle_read, this, session, session->get_buffer(), boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred));
+	}
 }

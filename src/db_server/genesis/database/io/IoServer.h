@@ -51,7 +51,7 @@ namespace Genesis::Database::Io {
 			void on_connect(Genesis::Common::Networking::Server::Session::ServerSession* session);
 
 			// Called whenever a packet is received
-			void on_receive(Genesis::Common::Networking::Server::Session::ServerSession* session, unsigned char* data, unsigned int bytes_read);
+			bool on_receive(Genesis::Common::Networking::Server::Session::ServerSession* session, unsigned char* data, unsigned int bytes_read);
 
 			// Called whenever a packet is sent
 			void on_send(char* name);

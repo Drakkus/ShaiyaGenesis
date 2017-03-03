@@ -24,6 +24,9 @@
 
 #include <genesis/database/io/packets/PacketHandler.h>
 #include <genesis/database/DatabaseServer.h>
+
+#include <genesis/common/logging/Logger.h>
+
 #include <iostream>
 #include <string>
 
@@ -45,7 +48,7 @@ namespace Genesis::Database::Io::Packets::Impl {
 		 * @param data
 		 *		The packet data
 		 */
-		void handle(Genesis::Common::Networking::Server::Session::ServerSession* session, 
+		bool handle(Genesis::Common::Networking::Server::Session::ServerSession* session, 
 				unsigned int length, unsigned short opcode, unsigned int request_id, unsigned char* data) override {
 
 			// The session key
@@ -60,20 +63,33 @@ namespace Genesis::Database::Io::Packets::Impl {
 			// The session key
 			std::string key(session_key);
 
-			// The MySQL connection
-			auto connection = Genesis::Database::DatabaseServer::get_instance()->get_connector()->get_connection();
+			std::cout << "Deleting session key: " << key << std::endl;
+			
+			// Attempt to catch any exceptions
+			try {
 
-			// The statement and result instances
-			auto statement = connection->prepareStatement("DELETE FROM genesis_userdata.sessions WHERE identity_keys = ?");
+				// The MySQL connection
+				auto connection = Genesis::Database::DatabaseServer::get_instance()->get_connector()->get_connection();
 
-			// Define the identity key
-			statement->setString(1, key);
+				// The statement and result instances
+				auto statement = connection->prepareStatement("DELETE FROM genesis_userdata.sessions WHERE identity_keys = ?");
 
-			// Execute the statement
-			statement->execute();
+				// Define the identity key
+				statement->setString(1, key);
 
-			// Delete the statement instance
-			delete statement;
+				// Execute the statement
+				statement->execute();
+
+				// Delete the statement instance
+				delete statement;
+			} catch (sql::SQLException &e) {
+				
+				// Log the exception
+				genesis_logger->error(e.what());
+			}
+
+			// Return true
+			return true;
 		}
 	};
 }

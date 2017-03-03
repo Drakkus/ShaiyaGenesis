@@ -50,11 +50,22 @@ namespace Genesis::Common::Database::Opcodes {
 	const unsigned short DELETE_SESSION = 3;
 	
 	/**
-	 * Represents a packet set from the game server, informing the database
+	 *
+	 */
+	const unsigned short GAME_DEFINITIONS_LOAD = 4;
+
+	/**
+	 * Represents a packet sent from the game server, informing the database
 	 * server that a user has connected to the game server, and that it should
 	 * verify the session.
 	 */
-	const unsigned short USER_GAME_CONNECT = 4;
+	const unsigned short USER_GAME_CONNECT = 5;
+
+	/**
+	 * Represents a packet sent from the game server, requesting the details
+	 * of a game account to be loaded from the database, and sent to the game server.
+	 */
+	const unsigned short GAME_USER_LOAD = 6;
 }
 
 #endif

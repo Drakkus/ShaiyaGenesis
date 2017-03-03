@@ -44,7 +44,7 @@ namespace Genesis::Database::Io::Packets::Impl {
 		 * @param data
 		 *		The packet data
 		 */
-		void handle(Genesis::Common::Networking::Server::Session::ServerSession* session, 
+		bool handle(Genesis::Common::Networking::Server::Session::ServerSession* session, 
 				unsigned int length, unsigned short opcode, unsigned int request_id, unsigned char* data) override {
 
 			// The current state of the standard output
@@ -64,6 +64,9 @@ namespace Genesis::Database::Io::Packets::Impl {
 
 			// Restore the standard output state
 			std::cout.copyfmt(old_state);
+
+			// Return true
+			return true;
 		}
 	};
 }

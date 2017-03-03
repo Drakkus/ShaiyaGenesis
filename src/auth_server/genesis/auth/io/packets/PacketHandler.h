@@ -47,7 +47,7 @@ namespace Genesis::Auth::Io::Packets {
 			 * @param data
 			 *		The packet data
 			 */
-			virtual void handle(Genesis::Common::Networking::Server::Session::ServerSession* session, 
+			virtual bool handle(Genesis::Common::Networking::Server::Session::ServerSession* session, 
 				unsigned int length, unsigned short opcode, unsigned char* data) = 0;
 	};
 }

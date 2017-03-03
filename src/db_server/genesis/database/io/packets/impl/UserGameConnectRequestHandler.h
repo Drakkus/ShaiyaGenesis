@@ -19,23 +19,22 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#ifndef GENESIS_DATABASE_IO_PACKETS_IMPL_SERVERLISTREQUESTHANDLER_H
-#define GENESIS_DATABASE_IO_PACKETS_IMPL_SERVERLISTREQUESTHANDLER_H
+#ifndef GENESIS_DATABASE_IO_PACKETS_IMPL_USERGAMECONNECTREQUESTHANDLER_H
+#define GENESIS_DATABASE_IO_PACKETS_IMPL_USERGAMECONNECTREQUESTHANDLER_H
 
 #include <genesis/database/io/packets/PacketHandler.h>
 #include <genesis/database/DatabaseServer.h>
 
-#include <genesis/common/database/structs/auth/Server.h>
-
+#include <genesis/common/database/structs/game/GameHandshakeRequest.h>
 #include <genesis/common/networking/packets/PacketBuilder.h>
 
 #include <iostream>
 
 namespace Genesis::Database::Io::Packets::Impl {
-	class ServerListRequestHandler : public PacketHandler {
+	class UserGameConnectRequestHandler : public PacketHandler {
 
 		/**
-		 * Handles a server list request from the authentication server
+		 * Handles the verification of a game handshake request
 		 *
 		 * @param session
 		 *		The session instance
@@ -52,6 +51,12 @@ namespace Genesis::Database::Io::Packets::Impl {
 		bool handle(Genesis::Common::Networking::Server::Session::ServerSession* session, 
 				unsigned int length, unsigned short opcode, unsigned int request_id, unsigned char* data) override {
 
+			// The game handshake request structure
+			Genesis::Common::Database::Structs::Game::GameHandshakeRequest handshake;
+
+			// Copy the handshake data
+			std::memcpy(&handshake, data, sizeof(handshake));
+
 			// The packet builder instance
 			auto bldr = new Genesis::Common::Networking::Packets::PacketBuilder(opcode);
 
@@ -63,57 +68,57 @@ namespace Genesis::Database::Io::Packets::Impl {
 
 			// The statement and result instances
 			auto statement = connection->createStatement();
-
-			// Select the server data
-			statement->execute("SELECT * FROM genesis_gamedata.world_status");
+			
+			// The prepared statement
+			std::auto_ptr<sql::PreparedStatement> prepared;
 
 			// The result set
 			std::auto_ptr<sql::ResultSet> result;
 
-			// Fetch the result set
-			result.reset(statement->getResultSet());
+			// Reset the prepared statement
+			prepared.reset(connection->prepareStatement("CALL genesis_userdata.validate_game_connect(?, ?, @result)"));
 
-			// Write the number of servers
-			bldr->write_byte(result->rowsCount());
+			// Attempt to catch any errors thrown
+			try {
 
-			// Loop through the results
-			while (result->next()) {
+				// The identity keys
+				std::string key((char*) handshake.identity_keys);
 
-				// The server instance
-				Genesis::Common::Database::Structs::Auth::Server server;
+				// Set the user id and identity keys
+				prepared->setInt(1, handshake.user_id);
+				prepared->setString(2, sql::SQLString(key));
 
-				// Define the server details
-				server.server_id = (unsigned char) result->getInt("server_id");
-				server.population = (unsigned short) result->getInt("population");
-				server.status = (unsigned char) result->getInt("status");
-				server.max_players = (unsigned short) result->getInt("max_players");
-				server.client_version = (unsigned int) result->getInt("client_version");
+				// Execute the prepared statement
+				prepared->execute();
 
-				// The ip address and server name
-				const char* ip_address = result->getString("ip_address").c_str();
-				const char* server_name = result->getString("server_name").c_str();
+				// Retrieve the results
+				result.reset(statement->executeQuery("SELECT @result as $result"));
 
-				// Copy the server name and ip address
-				std::copy(ip_address, ip_address + 15, server.ip_address);
-				std::copy(server_name, server_name + 32, server.server_name);
+				// If a result exists
+				if (result->next()) {
 
-				// The byte array
-				unsigned char struct_array[sizeof(server)];
-				memcpy(struct_array, &server, sizeof(server));
+					// The result
+					unsigned char response = (unsigned char) result->getInt("$result");
 
-				// Write the server instance
-				bldr->write_bytes(struct_array, sizeof(struct_array));
+					// Write the result
+					bldr->write_byte(response);
+
+				}
+
+			} catch (sql::SQLException &e) {
+
+				// Log the error
+				genesis_logger->error(e.what());
 			}
 
-			// Delete the statement instance
-			delete statement;
 
 			// Write the packet
 			session->write(bldr->to_packet());
 
-			// Delete the packet builder
+			// Delete the packet builder and statement instances
 			delete bldr;
-
+			delete statement;
+			
 			// Return true
 			return true;
 		}

@@ -25,6 +25,8 @@
 #include <genesis/common/networking/server/session/ServerSession.h>
 #include <genesis/common/networking/packets/PacketBuilder.h>
 #include <genesis/common/packets/Opcodes.h>
+#include <genesis/common/logging/Logger.h>
+
 #include <iostream>
 #include <functional>
 #include <iomanip>
@@ -70,18 +72,24 @@ bool IoServer::initialise(unsigned short port) {
  */
 void IoServer::on_connect(Genesis::Common::Networking::Server::Session::ServerSession* session) {
 
+	// Inform the user a new connection has connected
+	genesis_logger->info("New connection has been established from: %s", {session->get_remote_address().c_str()});
+
 	// The packet builder instance
 	auto bldr = new Genesis::Common::Networking::Packets::PacketBuilder(Genesis::Common::Packets::Opcodes::LOGIN_HANDSHAKE);
 
 	// Write the 3 header bytes
 	bldr->write_byte(0);
-	bldr->write_byte(4);
+	bldr->write_byte(64);
 	bldr->write_byte(128);
 
 	// The public key
 	unsigned char public_key[192];
 	
 	// Write the public key
+	// TODO: Properly generate and send the RSA public key
+	// Exponent: 64 bytes
+	// Modulus: 128 bytes
 	for (int i = 0; i < sizeof(public_key) / sizeof(public_key[0]); i++) {
 		bldr->write_byte(rand());
 	}
@@ -97,7 +105,7 @@ void IoServer::on_connect(Genesis::Common::Networking::Server::Session::ServerSe
  * Called whenever an on_receive event is received by the server, which signifies
  * an incoming packet from an existing connection.
  */
-void IoServer::on_receive(Genesis::Common::Networking::Server::Session::ServerSession* session, unsigned char* data, unsigned int bytes_read) {
+bool IoServer::on_receive(Genesis::Common::Networking::Server::Session::ServerSession* session, unsigned char* data, unsigned int bytes_read) {
 
 	// The packet length
 	unsigned short packet_length = ((data[0] & 0xFF) + ((data[1] & 0xFF) << 8));
@@ -112,7 +120,7 @@ void IoServer::on_receive(Genesis::Common::Networking::Server::Session::ServerSe
 	auto handler = this->packet_manager->get_handler(packet_opcode);
 
 	// Handle the incoming packet
-	handler->handle(session, packet_length - 4, packet_opcode, packet_data);
+	return handler->handle(session, packet_length - 4, packet_opcode, packet_data);
 }
 
 /**
@@ -128,5 +136,11 @@ void IoServer::on_send(char* name) {
  * an existing connection that has had it's connection terminated.
  */
 void IoServer::on_terminate(Genesis::Common::Networking::Server::Session::ServerSession* session) {
-	
+	std::cout << "session termination called" << std::endl;
+
+	// The null identity keys
+	unsigned char empty_keys[16];
+
+	// Set the null identity keys
+	session->set_identity_keys(empty_keys);
 }

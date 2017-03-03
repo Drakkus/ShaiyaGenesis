@@ -19,11 +19,11 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#ifndef GENESIS_AUTH_IO_IOSERVER_H
-#define GENESIS_AUTH_IO_IOSERVER_H
+#ifndef GENESIS_GAME_IO_IOSERVER_H
+#define GENESIS_GAME_IO_IOSERVER_H
 
-#include <genesis/auth/io/packets/PacketManager.h>
-#include <genesis/auth/io/packets/PacketHandler.h>
+#include <genesis/game/io/packets/PacketManager.h>
+#include <genesis/game/io/packets/PacketHandler.h>
 
 #include <string>
 
@@ -34,7 +34,7 @@ namespace Genesis::Common::Networking::Server::Session { class ServerSession; }
  * An IoServer which uses the {@link Genesis::Common::Networking::Server::GenesisServer} class to bind
  * to a socket, and listen for incoming network events.
  */
-namespace Genesis::Auth::Io {
+namespace Genesis::Game::Io {
 	class IoServer {
 
 		public:
@@ -45,7 +45,7 @@ namespace Genesis::Auth::Io {
 		private:
 
 			// The packet manager instance
-			Genesis::Auth::Io::Packets::PacketManager* packet_manager = new Genesis::Auth::Io::Packets::PacketManager();
+			Genesis::Game::Io::Packets::PacketManager* packet_manager = new Genesis::Game::Io::Packets::PacketManager();
 
 			// Called whenever a new connection is made
 			void on_connect(Genesis::Common::Networking::Server::Session::ServerSession* session);

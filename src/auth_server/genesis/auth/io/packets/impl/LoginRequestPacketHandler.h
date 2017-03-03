@@ -70,7 +70,7 @@ namespace Genesis::Auth::Io::Packets::Impl {
 		 * @param data
 		 *		The packet data
 		 */
-		void handle(Genesis::Common::Networking::Server::Session::ServerSession* session, unsigned int length, unsigned short opcode, unsigned char* data);
+		bool handle(Genesis::Common::Networking::Server::Session::ServerSession* session, unsigned int length, unsigned short opcode, unsigned char* data);
 	};
 }
 #endif

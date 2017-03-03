@@ -19,44 +19,37 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#ifndef GENESIS_AUTH_IO_PACKETS_IMPL_CONNECTIONTERMINATEDPACKETHANDLER_H
-#define GENESIS_AUTH_IO_PACKETS_IMPL_CONNECTIONTERMINATEDPACKETHANDLER_H
+#ifndef GENESIS_GAME_WORLD_PULSE_TASK_IMPL_LOADPLAYERTASK_H
+#define GENESIS_GAME_WORLD_PULSE_TASK_IMPL_LOADPLAYERTASK_H
 
-#include <genesis/auth/io/packets/PacketHandler.h>
-#include <genesis/common/networking/packets/PacketBuilder.h>
-#include <genesis/auth/AuthServer.h>
-#include <genesis/common/networking/client/GenesisClient.h>
-
-#include <genesis/common/database/Opcodes.h>
-
+#include <genesis/game/world/pulse/task/Task.h>
+#include <genesis/game/model/entity/player/Player.h>
 #include <iostream>
-#include <iomanip>
-#include <string>
-#include <thread>
 
-#include <genesis/common/cryptography/MD5.h>
-#include <genesis/common/packets/Opcodes.h>
+/**
+ * Represents a task used to load a player's details from the database server
+ */
+namespace Genesis::Game::World::Pulse::Task::Impl {
+	class LoadPlayerTask : public Task {
 
-namespace Genesis::Auth::Io::Packets::Impl {
-	class ConnectionTerminatedPacketHandler : public PacketHandler {
+		public:
 
-		/**
-		 * Handles a terminated connection packet
-		 *
-		 * @param session
-		 *		The session instance
-		 *
-		 * @param length
-		 *		The length of the packet
-		 *
-		 * @param opcode
-		 *		The opcode of the incoming packet
-		 *
-		 * @param data
-		 *		The packet data
-		 */
-		bool handle(Genesis::Common::Networking::Server::Session::ServerSession* session, 
-				unsigned int length, unsigned short opcode, unsigned char* data);
+			/**
+			 * The constructor for this task, which will define the player instance
+			 * to operate on
+			 *
+			 * @param player
+			 *		The player instance
+			 */
+			LoadPlayerTask(Genesis::Game::Model::Entity::Player::Player* player) : player(player) {}
+
+			// Execute the task
+			void execute();
+
+		private:
+
+			// The player instance
+			Genesis::Game::Model::Entity::Player::Player* player;
 	};
 }
 #endif

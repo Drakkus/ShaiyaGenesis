@@ -97,11 +97,11 @@ void LoginRequestPacketHandler::handle_server_list(Genesis::Common::Networking::
  * @param data
  *		The packet data
  */
-void LoginRequestPacketHandler::handle(Genesis::Common::Networking::Server::Session::ServerSession* session, unsigned int length, unsigned short opcode, unsigned char* data) {
+bool LoginRequestPacketHandler::handle(Genesis::Common::Networking::Server::Session::ServerSession* session, unsigned int length, unsigned short opcode, unsigned char* data) {
 
 	// If the packet is not the correct length
 	if (length != 48)
-		return;
+		return true;
 			
 	// The username and password
 	unsigned char username[19];
@@ -195,4 +195,7 @@ void LoginRequestPacketHandler::handle(Genesis::Common::Networking::Server::Sess
 
 	// Delete the packet builder
 	delete bldr;
+
+	// Return true
+	return true;
 }

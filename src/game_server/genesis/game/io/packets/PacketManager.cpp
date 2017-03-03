@@ -19,29 +19,25 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#include <genesis/database/io/packets/PacketManager.h>
-#include <genesis/database/io/packets/PacketHandler.h>
-#include <genesis/database/io/packets/impl/Handlers.h>
-#include <genesis/common/database/Opcodes.h>
+#include <genesis/game/io/packets/PacketManager.h>
+#include <genesis/game/io/packets/PacketHandler.h>
+#include <genesis/game/io/packets/impl/Handlers.h>
+#include <genesis/common/packets/Opcodes.h>
 
 // The opcodes namespace
-namespace Opcodes = Genesis::Common::Database::Opcodes;
+namespace Opcodes = Genesis::Common::Packets::Opcodes;
 
 /**
  * The {@code PacketManager} constructor, which is used to pre-define the packet handlers
- * for the opcodes used by the Shaiya Genesis database server.
+ * for the opcodes used by the Shaiya Genesis authentication server.
  */
-Genesis::Database::Io::Packets::PacketManager::PacketManager() {
+Genesis::Game::Io::Packets::PacketManager::PacketManager() {
 
 	// The default packet handler
-	this->handlers[0] = new Genesis::Database::Io::Packets::Impl::DefaultPacketHandler();
+	this->handlers[0] = new Genesis::Game::Io::Packets::Impl::DefaultPacketHandler();
 
-	// Define the database server packet handlers
-	this->handlers[Opcodes::USER_AUTH_REQUEST] = new Genesis::Database::Io::Packets::Impl::UserAuthRequestHandler();
-	this->handlers[Opcodes::SERVER_LIST] = new Genesis::Database::Io::Packets::Impl::ServerListRequestHandler();
-	this->handlers[Opcodes::DELETE_SESSION] = new Genesis::Database::Io::Packets::Impl::DeleteSessionRequestHandler();
-	this->handlers[Opcodes::USER_GAME_CONNECT] = new Genesis::Database::Io::Packets::Impl::UserGameConnectRequestHandler();
-	this->handlers[Opcodes::GAME_USER_LOAD] = new Genesis::Database::Io::Packets::Impl::GameUserLoadRequestHandler();
+	// Define the packet handlers
+	this->handlers[Opcodes::GAME_HANDSHAKE] = new Genesis::Game::Io::Packets::Impl::GameHandshakePacketHandler();
 }
 
 /**
@@ -53,8 +49,8 @@ Genesis::Database::Io::Packets::PacketManager::PacketManager() {
  * @returns
  *		The handler if found. If not, the {@link DefaultPacketHandler} instance is returned
  */
-Genesis::Database::Io::Packets::PacketHandler* Genesis::Database::Io::Packets::PacketManager::get_handler(unsigned short opcode) {
-	
+Genesis::Game::Io::Packets::PacketHandler* Genesis::Game::Io::Packets::PacketManager::get_handler(unsigned short opcode) {
+
 	// The number of key instances for the opcode
 	int count = this->handlers.count(opcode);
 

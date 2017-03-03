@@ -49,7 +49,7 @@ namespace Genesis::Database::Io::Packets::Impl {
 		 * @param data
 		 *		The packet data
 		 */
-		void handle(Genesis::Common::Networking::Server::Session::ServerSession* session, 
+		bool handle(Genesis::Common::Networking::Server::Session::ServerSession* session, 
 				unsigned int length, unsigned short opcode, unsigned int request_id, unsigned char* data) override {
 
 			// The auth request instance
@@ -134,6 +134,9 @@ namespace Genesis::Database::Io::Packets::Impl {
 
 			// Delete the statement
 			delete statement;
+
+			// Return true
+			return true;
 		}
 	};
 }

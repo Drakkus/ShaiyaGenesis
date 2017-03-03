@@ -19,44 +19,38 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#ifndef GENESIS_AUTH_IO_PACKETS_IMPL_CONNECTIONTERMINATEDPACKETHANDLER_H
-#define GENESIS_AUTH_IO_PACKETS_IMPL_CONNECTIONTERMINATEDPACKETHANDLER_H
+#include "LoadPlayerTask.h"
 
-#include <genesis/auth/io/packets/PacketHandler.h>
 #include <genesis/common/networking/packets/PacketBuilder.h>
-#include <genesis/auth/AuthServer.h>
-#include <genesis/common/networking/client/GenesisClient.h>
-
 #include <genesis/common/database/Opcodes.h>
 
+#include <genesis/game/world/GameWorld.h>
+
 #include <iostream>
-#include <iomanip>
-#include <string>
-#include <thread>
 
-#include <genesis/common/cryptography/MD5.h>
-#include <genesis/common/packets/Opcodes.h>
+/**
+ * Begin loading the details for a player
+ */
+void Genesis::Game::World::Pulse::Task::Impl::LoadPlayerTask::execute() {
+	
+	// The client instance
+	auto db_client = Genesis::Game::World::GameWorld::get_instance()->get_db_client();
 
-namespace Genesis::Auth::Io::Packets::Impl {
-	class ConnectionTerminatedPacketHandler : public PacketHandler {
+	// The packet builder instance
+	auto bldr = new Genesis::Common::Networking::Packets::PacketBuilder(Genesis::Common::Database::Opcodes::GAME_USER_LOAD);
 
-		/**
-		 * Handles a terminated connection packet
-		 *
-		 * @param session
-		 *		The session instance
-		 *
-		 * @param length
-		 *		The length of the packet
-		 *
-		 * @param opcode
-		 *		The opcode of the incoming packet
-		 *
-		 * @param data
-		 *		The packet data
-		 */
-		bool handle(Genesis::Common::Networking::Server::Session::ServerSession* session, 
-				unsigned int length, unsigned short opcode, unsigned char* data);
-	};
+	// Write the player id
+	bldr->write_int(player->get_index());
+
+	// Write the packet
+	db_client->write(bldr->to_packet(), [&](unsigned char* data, unsigned int length) {
+		
+		// Read the player data
+		std::cout << "Reading player data..." << std::endl;
+	});
+
+
+	// Delete the packet builder instance
+	delete bldr;
+
 }
-#endif

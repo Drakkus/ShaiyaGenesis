@@ -19,7 +19,40 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
+#include <genesis/common/logging/Logger.h>
+#include <genesis/common/configuration/ConfigManager.h>
+#include <genesis/game/world/GameWorld.h>
+#include <iostream>
+
+/**
+* The entry point for the Shaiya Genesis authentication server application.
+*
+* @param argc
+*		The count of command-line arguments
+*
+* @param argv
+*		The command-line argument values
+*/
 int main(int argc, char** argv) {
 
-	return 0;
+	// The configuration file path
+	std::string config_path = (argc >= 2 ? argv[1] : "./config/game_server.conf");
+
+	// The configuration error
+	std::string config_error; 
+
+	// Parse the configuration file
+	if (!config_manager->parse_file(config_path, config_error)) {
+		printf("Failed to parse configuration file at the path: %s\nError message: %s\n", config_path.c_str(), config_error.c_str());
+		return 1;
+	}
+
+	// Initialise the logger
+	genesis_logger->initialise(config_manager->get_value_or_default<std::string>("LogsDirectory", "./logs/game/"));
+
+	// Inform the user that the configuration had been parsed
+	genesis_logger->info("Game server configuration has been parsed successfully!");
+
+	// Initialise the game world
+	Genesis::Game::World::GameWorld::get_instance()->init();
 }

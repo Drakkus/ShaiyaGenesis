@@ -19,44 +19,42 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#ifndef GENESIS_AUTH_IO_PACKETS_IMPL_CONNECTIONTERMINATEDPACKETHANDLER_H
-#define GENESIS_AUTH_IO_PACKETS_IMPL_CONNECTIONTERMINATEDPACKETHANDLER_H
+#ifndef GENESIS_GAME_WORLD_PULSE_GAMEPULSEHANDLER_H
+#define GENESIS_GAME_WORLD_PULSE_GAMEPULSEHANDLER_H
 
-#include <genesis/auth/io/packets/PacketHandler.h>
-#include <genesis/common/networking/packets/PacketBuilder.h>
-#include <genesis/auth/AuthServer.h>
-#include <genesis/common/networking/client/GenesisClient.h>
+#include <genesis/game/world/pulse/task/Task.h>
 
-#include <genesis/common/database/Opcodes.h>
-
-#include <iostream>
-#include <iomanip>
-#include <string>
+#include <queue>
 #include <thread>
+#include <mutex>
+#include <functional>
 
-#include <genesis/common/cryptography/MD5.h>
-#include <genesis/common/packets/Opcodes.h>
+/**
+ * The game pulse handler, which is used to process game world tasks.
+ */
+namespace Genesis::Game::World::Pulse {
+	class GamePulseHandler {
 
-namespace Genesis::Auth::Io::Packets::Impl {
-	class ConnectionTerminatedPacketHandler : public PacketHandler {
+		public:
 
-		/**
-		 * Handles a terminated connection packet
-		 *
-		 * @param session
-		 *		The session instance
-		 *
-		 * @param length
-		 *		The length of the packet
-		 *
-		 * @param opcode
-		 *		The opcode of the incoming packet
-		 *
-		 * @param data
-		 *		The packet data
-		 */
-		bool handle(Genesis::Common::Networking::Server::Session::ServerSession* session, 
-				unsigned int length, unsigned short opcode, unsigned char* data);
+			// Starts the pulse handler
+			void start();
+
+			// Begins processing a task
+			void pulse();
+
+			// Offers a new task to the pulse handler
+			void offer(Genesis::Game::World::Pulse::Task::Task* task);
+		private:
+
+			// If the pulse handler is running
+			bool is_running = false;
+
+			// The queue of pending tasks
+			std::queue<Genesis::Game::World::Pulse::Task::Task*> tasks;
+
+			// The mutex
+			std::mutex mutex;
 	};
 }
 #endif

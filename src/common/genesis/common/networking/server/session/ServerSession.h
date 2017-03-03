@@ -38,6 +38,9 @@ namespace Genesis::Common::Networking::Server::Session {
 			// Constructor which creates the socket from the io service instance
 			ServerSession(boost::asio::io_service &io_service) : socket(io_service) {}
 
+			// Destructor, which handles the deletion of session members
+			~ServerSession() {}
+
 			/**
 			 * Gets the socket instance used by this session
 			 *

@@ -22,6 +22,7 @@
 #ifndef GENESIS_COMMON_NETWORKING_GENESISSERVER_H
 #define GENESIS_COMMON_NETWORKING_GENESISSERVER_H
 
+#include <vector>
 #include <functional>
 #include <boost/asio.hpp>
 #include "session/ServerSession.h"
@@ -64,7 +65,7 @@ namespace Genesis::Common::Networking::Server {
 			 * @param receive_function
 			 *		The function to call
 			 */
-			void on_receive(std::function<void(Genesis::Common::Networking::Server::Session::ServerSession*, uint8_t*, unsigned int)> receive_function) {
+			void on_receive(std::function<bool(Genesis::Common::Networking::Server::Session::ServerSession*, uint8_t*, unsigned int)> receive_function) {
 				this->receive_function = receive_function;
 			}
 
@@ -100,7 +101,7 @@ namespace Genesis::Common::Networking::Server {
 			std::function<void(Genesis::Common::Networking::Server::Session::ServerSession*)> connect_function;
 
 			// The on_receive lambda function, which is called whenever a new packet is received
-			std::function<void(Genesis::Common::Networking::Server::Session::ServerSession*, unsigned char*, unsigned int)> receive_function;
+			std::function<bool(Genesis::Common::Networking::Server::Session::ServerSession*, unsigned char*, unsigned int)> receive_function;
 
 			// The on_send lambda function, which is called whenever a packet is sent
 			std::function<void(char*)> send_function;

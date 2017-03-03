@@ -19,44 +19,22 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#ifndef GENESIS_AUTH_IO_PACKETS_IMPL_CONNECTIONTERMINATEDPACKETHANDLER_H
-#define GENESIS_AUTH_IO_PACKETS_IMPL_CONNECTIONTERMINATEDPACKETHANDLER_H
+#ifndef GENESIS_GAME_WORLD_PULSE_TASK_TASK_H
+#define GENESIS_GAME_WORLD_PULSE_TASK_TASK_H
 
-#include <genesis/auth/io/packets/PacketHandler.h>
-#include <genesis/common/networking/packets/PacketBuilder.h>
-#include <genesis/auth/AuthServer.h>
-#include <genesis/common/networking/client/GenesisClient.h>
+/**
+ * Represents a task to be processed by the {@code GamePulseHandler}
+ */
+namespace Genesis::Game::World::Pulse::Task {
+	class Task {
 
-#include <genesis/common/database/Opcodes.h>
+		public:
 
-#include <iostream>
-#include <iomanip>
-#include <string>
-#include <thread>
+			// Execute the task
+			virtual void execute() = 0;
 
-#include <genesis/common/cryptography/MD5.h>
-#include <genesis/common/packets/Opcodes.h>
-
-namespace Genesis::Auth::Io::Packets::Impl {
-	class ConnectionTerminatedPacketHandler : public PacketHandler {
-
-		/**
-		 * Handles a terminated connection packet
-		 *
-		 * @param session
-		 *		The session instance
-		 *
-		 * @param length
-		 *		The length of the packet
-		 *
-		 * @param opcode
-		 *		The opcode of the incoming packet
-		 *
-		 * @param data
-		 *		The packet data
-		 */
-		bool handle(Genesis::Common::Networking::Server::Session::ServerSession* session, 
-				unsigned int length, unsigned short opcode, unsigned char* data);
+			// The destructor
+			~Task() {}
 	};
 }
 #endif

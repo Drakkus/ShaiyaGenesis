@@ -19,44 +19,25 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#ifndef GENESIS_AUTH_IO_PACKETS_IMPL_CONNECTIONTERMINATEDPACKETHANDLER_H
-#define GENESIS_AUTH_IO_PACKETS_IMPL_CONNECTIONTERMINATEDPACKETHANDLER_H
+#ifndef GENESIS_COMMON_DATABASE_DATABASE_STRUCTS_GAME_GAMEHANDSHAKE_REQUEST_H
+#define GENESIS_COMMON_DATABASE_DATABASE_STRUCTS_GAME_GAMEHANDSHAKE_REQUEST_H
 
-#include <genesis/auth/io/packets/PacketHandler.h>
-#include <genesis/common/networking/packets/PacketBuilder.h>
-#include <genesis/auth/AuthServer.h>
-#include <genesis/common/networking/client/GenesisClient.h>
+/**
+ * This namespace will contain all the database structures, used by the servers.
+ * This will allow us to easily convert byte streams between the servers to a structure,
+ * through static casting.
+ */
+namespace Genesis::Common::Database::Structs::Game {
 
-#include <genesis/common/database/Opcodes.h>
+	// Represents an authentication request
+	struct GameHandshakeRequest {
 
-#include <iostream>
-#include <iomanip>
-#include <string>
-#include <thread>
+		// The user id of the user
+		unsigned int user_id;
 
-#include <genesis/common/cryptography/MD5.h>
-#include <genesis/common/packets/Opcodes.h>
-
-namespace Genesis::Auth::Io::Packets::Impl {
-	class ConnectionTerminatedPacketHandler : public PacketHandler {
-
-		/**
-		 * Handles a terminated connection packet
-		 *
-		 * @param session
-		 *		The session instance
-		 *
-		 * @param length
-		 *		The length of the packet
-		 *
-		 * @param opcode
-		 *		The opcode of the incoming packet
-		 *
-		 * @param data
-		 *		The packet data
-		 */
-		bool handle(Genesis::Common::Networking::Server::Session::ServerSession* session, 
-				unsigned int length, unsigned short opcode, unsigned char* data);
+		// The identity keys of the user
+		unsigned char identity_keys[17];
 	};
+
 }
 #endif

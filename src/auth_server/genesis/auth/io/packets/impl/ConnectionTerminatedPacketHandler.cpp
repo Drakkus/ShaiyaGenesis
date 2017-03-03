@@ -19,13 +19,13 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#include "DefaultPacketHandler.h"
+#include "ConnectionTerminatedPacketHandler.h"
 
 // The packet handler implementation namespace
 using namespace Genesis::Auth::Io::Packets::Impl;
 
 /**
- * Handles an undefined packet
+ * Handles a terminated connection packet
  *
  * @param session
  *		The session instance
@@ -39,27 +39,34 @@ using namespace Genesis::Auth::Io::Packets::Impl;
  * @param data
  *		The packet data
  */
-bool DefaultPacketHandler::handle(Genesis::Common::Networking::Server::Session::ServerSession* session, 
+bool ConnectionTerminatedPacketHandler::handle(Genesis::Common::Networking::Server::Session::ServerSession* session, 
 				unsigned int length, unsigned short opcode, unsigned char* data) {
 
-	// The current state of the standard output
-	std::ios old_state(nullptr);
-	old_state.copyfmt(std::cout);
+	// The identity keys for this session
+	auto identity_keys = session->get_identity_keys();
 
-	// Inform the user that an undefined packet is received
-	std::cout << "[Unhandled packet, Opcode: " << opcode << ", Length: " << length << ", Data: ";
+	// The client instance
+	auto db_client = AuthServer::get_instance()->get_db_client();
 
-	// Write the packet data, in hex form
-	for (int i = 0; i < length; i++) {
-		std::cout << std::setw(2) << std::setfill('0') << std::hex << (int)data[i] << " ";
-	}
+	// The packet builder instance
+	auto bldr = new Genesis::Common::Networking::Packets::PacketBuilder(Genesis::Common::Database::Opcodes::DELETE_SESSION);
+			
+	// Write the identity keys to delete
+	bldr->write_bytes(identity_keys, 16);
+	
+	// Write the packet
+	db_client->write(bldr->to_packet(), [&](unsigned char* data, unsigned int length) {
+	});
 
-	// End the information message
-	std::cout << "]" << std::endl;
+	// The null identity keys
+	unsigned char empty_keys[16];
 
-	// Restore the standard output state
-	std::cout.copyfmt(old_state);
+	// Set the null identity keys
+	session->set_identity_keys(empty_keys);
 
-	// Return true
-	return true;
+	// Delete the session
+	delete session;
+	
+	// Return false
+	return false;
 }

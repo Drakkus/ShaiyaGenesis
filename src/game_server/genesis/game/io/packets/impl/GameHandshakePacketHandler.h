@@ -19,29 +19,20 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#ifndef GENESIS_AUTH_IO_PACKETS_IMPL_CONNECTIONTERMINATEDPACKETHANDLER_H
-#define GENESIS_AUTH_IO_PACKETS_IMPL_CONNECTIONTERMINATEDPACKETHANDLER_H
+#ifndef GENESIS_GAME_IO_PACKETS_IMPL_GAMEHANDSHAKEPACKETHANDLER_H
+#define GENESIS_GAME_IO_PACKETS_IMPL_GAMEHANDSHAKEPACKETHANDLER_H
 
-#include <genesis/auth/io/packets/PacketHandler.h>
-#include <genesis/common/networking/packets/PacketBuilder.h>
-#include <genesis/auth/AuthServer.h>
-#include <genesis/common/networking/client/GenesisClient.h>
-
-#include <genesis/common/database/Opcodes.h>
+#include <genesis/game/io/packets/PacketHandler.h>
+#include <genesis/game/model/entity/player/Player.h>
 
 #include <iostream>
 #include <iomanip>
-#include <string>
-#include <thread>
 
-#include <genesis/common/cryptography/MD5.h>
-#include <genesis/common/packets/Opcodes.h>
-
-namespace Genesis::Auth::Io::Packets::Impl {
-	class ConnectionTerminatedPacketHandler : public PacketHandler {
+namespace Genesis::Game::Io::Packets::Impl {
+	class GameHandshakePacketHandler : public PacketHandler {
 
 		/**
-		 * Handles a terminated connection packet
+		 * Handles an incoming game connection
 		 *
 		 * @param session
 		 *		The session instance
@@ -55,8 +46,15 @@ namespace Genesis::Auth::Io::Packets::Impl {
 		 * @param data
 		 *		The packet data
 		 */
-		bool handle(Genesis::Common::Networking::Server::Session::ServerSession* session, 
-				unsigned int length, unsigned short opcode, unsigned char* data);
+		bool handle(Genesis::Common::Networking::Server::Session::ServerSession* session, unsigned int length, unsigned short opcode, unsigned char* data);
+	
+		/**
+		 * Handles the loading of a player instance
+		 *
+		 * @param player
+		 *		The player instance
+		 */
+		void load_player(Genesis::Game::Model::Entity::Player::Player* player);
 	};
 }
 #endif

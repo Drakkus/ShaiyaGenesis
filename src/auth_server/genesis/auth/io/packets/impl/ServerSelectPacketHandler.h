@@ -52,11 +52,11 @@ namespace Genesis::Auth::Io::Packets::Impl {
 		 * @param data
 		 *		The packet data
 		 */
-		void handle(Genesis::Common::Networking::Server::Session::ServerSession* session, unsigned int length, unsigned short opcode, unsigned char* data) override {
+		bool handle(Genesis::Common::Networking::Server::Session::ServerSession* session, unsigned int length, unsigned short opcode, unsigned char* data) override {
 
 			// If the length is not 5
 			if (length != 5)
-				return;
+				return true;
 
 			// The packet builder instance
 			auto bldr = new Genesis::Common::Networking::Packets::PacketBuilder(opcode);
@@ -99,27 +99,12 @@ namespace Genesis::Auth::Io::Packets::Impl {
 				// The ip address string
 				std::string ip_address(found_server->ip_address);
 
-				// The string delimiter
-				std::string delimiter = ".";
+				// TODO: Finish ip address string splitting
+				bldr->write_byte(144);
+				bldr->write_byte(217);
+				bldr->write_byte(14);
+				bldr->write_byte(189);
 
-				// The current position
-				size_t pos = 0;
-
-				// The current token
-				std::string token;
-
-				// Parse the ip address string
-				while ((pos = ip_address.find(delimiter)) != std::string::npos) {
-
-					// The token
-    				token = ip_address.substr(0, pos);
-    				
-    				// Write the token as a byte
-    				bldr->write_byte(std::stoi(token));
-
-    				// Remove the token from the string
-    				ip_address.erase(0, pos + delimiter.length());
-				}
 			}
 
 			// Unlock the mutex
@@ -130,6 +115,9 @@ namespace Genesis::Auth::Io::Packets::Impl {
 
 			// Delete the packet builder and server
 			delete bldr;
+
+			// Return true
+			return true;
 		}
 	};
 }

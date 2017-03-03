@@ -19,44 +19,42 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#ifndef GENESIS_AUTH_IO_PACKETS_IMPL_CONNECTIONTERMINATEDPACKETHANDLER_H
-#define GENESIS_AUTH_IO_PACKETS_IMPL_CONNECTIONTERMINATEDPACKETHANDLER_H
+#ifndef GENESIS_GAME_IO_PACKETS_PACKETMANAGER_H
+#define GENESIS_GAME_IO_PACKETS_PACKETMANAGER_H
 
-#include <genesis/auth/io/packets/PacketHandler.h>
-#include <genesis/common/networking/packets/PacketBuilder.h>
-#include <genesis/auth/AuthServer.h>
-#include <genesis/common/networking/client/GenesisClient.h>
+#include <map>
+#include <genesis/game/io/packets/PacketHandler.h>
 
-#include <genesis/common/database/Opcodes.h>
+// Forward declaration of the PacketHandler class
+namespace Genesis::Game::Io::Packets { class PacketHandler; }
 
-#include <iostream>
-#include <iomanip>
-#include <string>
-#include <thread>
+/**
+ * The PacketManager class, which assigns the packet handler for each opcode.
+ * This is referenced as a singleton, and is used to call the approprite handler instances
+ */
+namespace Genesis::Game::Io::Packets {
+	class PacketManager {
 
-#include <genesis/common/cryptography/MD5.h>
-#include <genesis/common/packets/Opcodes.h>
+		public:
 
-namespace Genesis::Auth::Io::Packets::Impl {
-	class ConnectionTerminatedPacketHandler : public PacketHandler {
+			// The constructor, which initialises the handler instances
+			PacketManager();
 
-		/**
-		 * Handles a terminated connection packet
-		 *
-		 * @param session
-		 *		The session instance
-		 *
-		 * @param length
-		 *		The length of the packet
-		 *
-		 * @param opcode
-		 *		The opcode of the incoming packet
-		 *
-		 * @param data
-		 *		The packet data
-		 */
-		bool handle(Genesis::Common::Networking::Server::Session::ServerSession* session, 
-				unsigned int length, unsigned short opcode, unsigned char* data);
+			/**
+			 * Retrieves the PacketHandler for a specific opcode
+			 *
+			 * @param opcode
+			 *		The opcode
+			 *
+			 * @returns
+			 *		The packet handler
+			 */
+			Genesis::Game::Io::Packets::PacketHandler* get_handler(unsigned short opcode);
+			
+		private:
+
+			// The map of opcodes to packet handlers
+			std::map<unsigned short, Genesis::Game::Io::Packets::PacketHandler*> handlers;
 	};
 }
 #endif
