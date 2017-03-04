@@ -79,6 +79,11 @@ namespace Genesis::Common::Networking::Server::Session {
 			void write(Genesis::Common::Networking::Packets::Packet* packet);
 
 			/**
+			 * Clears the session identity keys
+			 */
+			void clear_identity_keys();
+
+			/**
 			 * Sets the identity keys for this session
 			 *
 			 * @param keys

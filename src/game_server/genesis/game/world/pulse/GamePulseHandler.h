@@ -24,6 +24,8 @@
 
 #include <genesis/game/world/pulse/task/Task.h>
 
+#include <boost/shared_ptr.hpp>
+
 #include <queue>
 #include <thread>
 #include <mutex>

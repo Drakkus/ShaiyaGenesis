@@ -104,6 +104,11 @@ void ServerSession::write(Genesis::Common::Networking::Packets::Packet* packet) 
 	delete packet;
 }
 
+void ServerSession::clear_identity_keys() {
+	for (int i = 0; i < sizeof(this->identity_keys); i++)
+		this->identity_keys[i] = '\0';
+}
+
 /**
  * Sets the identity keys for this session
  *

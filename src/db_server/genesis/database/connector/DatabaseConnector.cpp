@@ -52,6 +52,48 @@ bool Genesis::Database::Connector::DatabaseConnector::connect() {
 	this->driver = get_driver_instance();
 	this->connection = driver->connect(stream.str(), user, password);
 
+	// The option
+	bool client_multi_statements = true;
+
+	// Set the client options
+	connection->setClientOption("CLIENT_MULTI_STATEMENTS", &client_multi_statements);
+
 	// Connect to the database
 	return this->connection->isValid();
+}
+
+sql::Connection* Genesis::Database::Connector::DatabaseConnector::get_connection() {
+	// The SQL details
+	auto server = config_manager->get_value_or_default<std::string>("SqlHost", "127.0.0.1").c_str();
+	auto port = config_manager->get_value_or_default<unsigned short>("SqlPort", 3306);
+	auto user = config_manager->get_value_or_default<std::string>("SqlUser", "root").c_str();
+	auto password = config_manager->get_value_or_default<std::string>("SqlPassword", "password").c_str();
+
+	// The stringstream
+	std::stringstream stream;
+
+	// Add the protocl
+	stream << "tcp://";
+
+	// Add the ip address
+	stream << server;
+
+	// Add the delimiter
+	stream << ":";
+
+	// Add the port
+	stream << port;
+
+	// Create a new connection
+	this->driver = get_driver_instance();
+	this->connection = driver->connect(stream.str(), user, password);
+
+	// The option
+	bool client_multi_statements = true;
+
+	// Set the client options
+	connection->setClientOption("CLIENT_MULTI_STATEMENTS", &client_multi_statements);
+
+	// Connect to the database
+	return this->connection;
 }

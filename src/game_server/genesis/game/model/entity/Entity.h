@@ -8,12 +8,13 @@ namespace Genesis::Game::Model::Entity {
 
 			Entity(unsigned int index) : index(index) {}
 
-			unsigned int get_index() {
+			unsigned int get_index() const {
 				return this->index;
 			}
-		private:
 
+		private:
 			unsigned int index;
+			
 	};
 }
 #endif

@@ -24,6 +24,9 @@
 
 #include <genesis/game/world/pulse/task/Task.h>
 #include <genesis/game/model/entity/player/Player.h>
+
+#include <boost/shared_ptr.hpp>
+
 #include <iostream>
 
 /**

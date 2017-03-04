@@ -19,36 +19,29 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#ifndef GENESIS_GAME_IO_PACKETS_IMPL_GAMEHANDSHAKEPACKETHANDLER_H
-#define GENESIS_GAME_IO_PACKETS_IMPL_GAMEHANDSHAKEPACKETHANDLER_H
+#ifndef GENESIS_COMMON_DATABASE_DATABASE_STRUCTS_GAME_GAMELOADPLAYERRESPONSE_H
+#define GENESIS_COMMON_DATABASE_DATABASE_STRUCTS_GAME_GAMELOADPLAYERRESPONSE_H
 
-#include <genesis/game/io/packets/PacketHandler.h>
-#include <genesis/game/model/entity/player/Player.h>
+/**
+ * This namespace will contain all the database structures, used by the servers.
+ * This will allow us to easily convert byte streams between the servers to a structure,
+ * through static casting.
+ */
+namespace Genesis::Common::Database::Structs::Game {
 
-#include <boost/shared_ptr.hpp>
+	// Represents a response to loading a game account
+	struct GameLoadPlayerResponse {
 
-#include <iostream>
-#include <iomanip>
+		// The faction of the player
+		unsigned char faction;
 
-namespace Genesis::Game::Io::Packets::Impl {
-	class GameHandshakePacketHandler : public PacketHandler {
-
-		/**
-		 * Handles an incoming game connection
-		 *
-		 * @param session
-		 *		The session instance
-		 *
-		 * @param length
-		 *		The length of the packet
-		 *
-		 * @param opcode
-		 *		The opcode of the incoming packet
-		 *
-		 * @param data
-		 *		The packet data
-		 */
-		bool handle(Genesis::Common::Networking::Server::Session::ServerSession* session, unsigned int length, unsigned short opcode, unsigned char* data);
+		// The max game mode creatable
+		unsigned char max_char_mode;
+		
+		// The privilege level
+		unsigned char privilege_level;
+		
 	};
+
 }
 #endif

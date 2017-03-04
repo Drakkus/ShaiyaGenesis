@@ -37,10 +37,13 @@ using namespace Genesis::Game::World;
 /**
  * Initialise the game world
  */
-void GameWorld::init() {
+void GameWorld::init(unsigned char server_id) {
 
 	// Inform the user that the game server is being initialised
 	genesis_logger->info("Initialising game world...");
+
+	// Set the server id
+	this->server_id = server_id;
 
 	// The address and port of the database server
 	auto dbserver_address = config_manager->get_value_or_default<std::string>("DbServerAddress", "127.0.0.1");
@@ -84,7 +87,8 @@ void GameWorld::init() {
  *		The player instance
  */
 void GameWorld::load_player(Genesis::Game::Model::Entity::Player::Player* player) {
+std::cout << "load index: " << player->get_index() << std::endl;
 
 	// Push the task to the pulse handler
-	pulse_handler->offer(new Genesis::Game::World::Pulse::Task::Impl::LoadPlayerTask(player));
+	//pulse_handler->offer(new Genesis::Game::World::Pulse::Task::Impl::LoadPlayerTask(player));
 }

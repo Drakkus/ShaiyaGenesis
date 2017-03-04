@@ -51,13 +51,78 @@ namespace Genesis::Database::Io::Packets::Impl {
 		bool handle(Genesis::Common::Networking::Server::Session::ServerSession* session, 
 				unsigned int length, unsigned short opcode, unsigned int request_id, unsigned char* data) override {
 
-			std::cout << "load game account request..." << std::endl;
-			
 			// The packet builder instance
 			auto bldr = new Genesis::Common::Networking::Packets::PacketBuilder(opcode);
 
 			// Write the request id
 			bldr->write_int(request_id);
+
+			// The MySQL connection
+			std::auto_ptr<sql::Connection> connection(Genesis::Database::DatabaseServer::get_instance()->get_connector()->get_connection());
+			
+			// The prepared statement
+			std::auto_ptr<sql::PreparedStatement> prepared(connection->prepareStatement("CALL genesis_gamedata.load_game_account(?, ?)"));
+
+			// The result set
+			std::auto_ptr<sql::ResultSet> result;
+
+			// Reset the prepared statement
+			prepared.reset(connection->prepareStatement("CALL genesis_gamedata.load_game_account(?, ?)"));
+			
+			// Attempt to catch any errors
+			try {
+
+				// The user id and server id
+				unsigned int user_id;
+				unsigned char server_id;
+
+				// Populate the values
+				std::memcpy(&user_id, data, sizeof(user_id));
+				std::memcpy(&server_id, data + sizeof(user_id), sizeof(server_id));
+				
+				// Define the user id and server id
+				prepared->setInt(1, user_id);
+				prepared->setInt(2, server_id);
+
+				// Execute the query
+				result.reset(prepared->executeQuery());
+
+				// Loop through the result set
+				for (;;) {
+
+					// While there is a result to be read
+					while (result->next()) {
+						
+						// Write the faction
+						bldr->write_byte((unsigned char) result->getInt("faction"));
+
+						// Write the max char mode
+						bldr->write_byte((unsigned char) result->getInt("max_char_mode"));
+
+						// Write the privilege level
+						bldr->write_byte((unsigned char) result->getInt("privilege_level"));
+					}
+
+					// If there are more results
+					if (prepared->getMoreResults()) {
+
+						// Process the next result set
+						result.reset(prepared->getResultSet());
+						continue;
+					}
+
+					// Break the loop
+					break;
+				}
+
+			} catch (sql::SQLException &e) {
+
+				// Log the error
+				genesis_logger->error(e.what());
+			}
+
+			// Close the prepared
+			prepared->close();
 
 			// Write the packet
 			session->write(bldr->to_packet());

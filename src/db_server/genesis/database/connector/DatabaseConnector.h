@@ -29,16 +29,26 @@
 #include <cppconn/resultset.h>
 #include <cppconn/statement.h>
 #include <cppconn/prepared_statement.h>
+#include <mutex>
 
 namespace Genesis::Database::Connector {
 	class DatabaseConnector {
 
 		public:
 			bool connect();
-			sql::Connection* get_connection() { return connection; }
+			void lock() {
+				this->mutex.lock();
+			}
+			void unlock() {
+				this->mutex.lock();
+			}
+
+
+			sql::Connection* get_connection();
 		private:
 			sql::Driver* driver;
 			sql::Connection* connection;
+			std::mutex mutex;
 	};
 }
 #endif

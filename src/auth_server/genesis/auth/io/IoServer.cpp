@@ -136,11 +136,7 @@ void IoServer::on_send(char* name) {
  * an existing connection that has had it's connection terminated.
  */
 void IoServer::on_terminate(Genesis::Common::Networking::Server::Session::ServerSession* session) {
-	std::cout << "session termination called" << std::endl;
-
-	// The null identity keys
-	unsigned char empty_keys[16];
 
 	// Set the null identity keys
-	session->set_identity_keys(empty_keys);
+	session->clear_identity_keys();
 }

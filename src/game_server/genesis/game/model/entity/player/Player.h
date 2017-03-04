@@ -6,6 +6,8 @@
 
 #include <genesis/game/model/entity/Entity.h>
 
+#include <iostream>
+
 namespace Genesis::Game::Model::Entity::Player {
 	class Player : public Entity {
 

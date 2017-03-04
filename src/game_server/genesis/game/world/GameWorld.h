@@ -47,17 +47,28 @@ namespace Genesis::Game::World {
 			}
 
 			// Initialise the game server
-			void init();
+			void init(unsigned char server_id);
 
 			// Load the player into the game world
 			void load_player(Genesis::Game::Model::Entity::Player::Player* player);
 
+			// Gets the server id
+			unsigned char get_server_id() {
+				return server_id;
+			}
+			
+			Genesis::Game::World::Pulse::GamePulseHandler* get_pulse_handler() {
+				return pulse_handler;
+			}
 			// Gets the database client instance
 			Genesis::Common::Networking::Client::GenesisClient* get_db_client() {
 				return this->db_client;
 			}
 			
 		private:
+			
+			// The server id
+			unsigned char server_id;
 			
 			// The GenesisClient instance
 			Genesis::Common::Networking::Client::GenesisClient* db_client;

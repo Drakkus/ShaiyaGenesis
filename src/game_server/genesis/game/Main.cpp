@@ -54,5 +54,5 @@ int main(int argc, char** argv) {
 	genesis_logger->info("Game server configuration has been parsed successfully!");
 
 	// Initialise the game world
-	Genesis::Game::World::GameWorld::get_instance()->init();
+	Genesis::Game::World::GameWorld::get_instance()->init(config_manager->get_value_or_default<unsigned char>("GameServerId", 1));
 }

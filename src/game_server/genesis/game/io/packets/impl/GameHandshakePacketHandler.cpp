@@ -25,6 +25,7 @@
 #include <genesis/common/networking/packets/PacketBuilder.h>
 #include <genesis/common/database/Opcodes.h>
 
+#include <genesis/game/world/pulse/task/impl/LoadPlayerTask.h>
 #include <genesis/game/world/GameWorld.h>
 
 #include <string>
@@ -87,12 +88,12 @@ bool GameHandshakePacketHandler::handle(Genesis::Common::Networking::Server::Ses
 
 		// If the result is 0, we should create a player instance, and request to load it's data
 		if (result == 0) {
-
+			
 			// The player instance
 			auto player = new Genesis::Game::Model::Entity::Player::Player(handshake.user_id, session);
 
 			// Load the player
-			Genesis::Game::World::GameWorld::get_instance()->load_player(player);
+			Genesis::Game::World::GameWorld::get_instance()->get_pulse_handler()->offer(new Genesis::Game::World::Pulse::Task::Impl::LoadPlayerTask(player));
 		}
 
 		// Write the packet

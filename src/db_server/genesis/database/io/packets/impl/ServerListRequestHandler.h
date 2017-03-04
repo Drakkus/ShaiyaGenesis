@@ -105,6 +105,9 @@ namespace Genesis::Database::Io::Packets::Impl {
 				bldr->write_bytes(struct_array, sizeof(struct_array));
 			}
 
+			// Close the statement
+			statement->close();
+			
 			// Delete the statement instance
 			delete statement;
 
