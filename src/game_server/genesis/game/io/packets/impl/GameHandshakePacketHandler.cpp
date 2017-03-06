@@ -93,7 +93,7 @@ bool GameHandshakePacketHandler::handle(Genesis::Common::Networking::Server::Ses
 			auto player = new Genesis::Game::Model::Entity::Player::Player(handshake.user_id, session);
 
 			// Load the player
-			Genesis::Game::World::GameWorld::get_instance()->get_pulse_handler()->offer(new Genesis::Game::World::Pulse::Task::Impl::LoadPlayerTask(player));
+			Genesis::Game::World::GameWorld::get_instance()->load_player(player);
 		}
 
 		// Write the packet

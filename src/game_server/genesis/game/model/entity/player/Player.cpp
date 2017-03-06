@@ -19,13 +19,7 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#ifndef GENESIS_GAME_IO_PACKETS_IMPL_HANDLERS_H
-#define GENESIS_GAME_IO_PACKETS_IMPL_HANDLERS_H
+#include "Player.h"
 
-// A header to include all packet handlers
-#include "DefaultPacketHandler.h"
-#include "GameHandshakePacketHandler.h"
-#include "CheckAvailableNamePacketHandler.h"
-#include "CreateCharacterPacketHandler.h"
-
-#endif
+// The player namespace
+using namespace Genesis::Game::Model::Entity::Player;

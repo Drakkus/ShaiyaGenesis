@@ -19,22 +19,22 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#ifndef GENESIS_DATABASE_IO_PACKETS_IMPL_USERGAMECONNECTREQUESTHANDLER_H
-#define GENESIS_DATABASE_IO_PACKETS_IMPL_USERGAMECONNECTREQUESTHANDLER_H
+#ifndef GENESIS_DATABASE_IO_PACKETS_IMPL_CREATECHARACTERREQUESTHANDLER_H
+#define GENESIS_DATABASE_IO_PACKETS_IMPL_CREATECHARACTERREQUESTHANDLER_H
 
 #include <genesis/database/io/packets/PacketHandler.h>
 #include <genesis/database/DatabaseServer.h>
 
-#include <genesis/common/database/structs/game/GameHandshakeRequest.h>
+#include <genesis/common/database/structs/game/CreateCharacterRequest.h>
 #include <genesis/common/networking/packets/PacketBuilder.h>
 
 #include <iostream>
 
 namespace Genesis::Database::Io::Packets::Impl {
-	class UserGameConnectRequestHandler : public PacketHandler {
+	class CreateCharacterRequestHandler : public PacketHandler {
 
 		/**
-		 * Handles the verification of a game handshake request
+		 * Handles the creation of a character
 		 *
 		 * @param session
 		 *		The session instance
@@ -51,17 +51,17 @@ namespace Genesis::Database::Io::Packets::Impl {
 		bool handle(Genesis::Common::Networking::Server::Session::ServerSession* session, 
 				unsigned int length, unsigned short opcode, unsigned int request_id, unsigned char* data) override {
 
-			// The game handshake request structure
-			Genesis::Common::Database::Structs::Game::GameHandshakeRequest handshake;
+			// The creation request
+			Genesis::Common::Database::Structs::Game::CreateCharacterRequest request;
 
-			// Copy the handshake data
-			std::memcpy(&handshake, data, sizeof(handshake));
+			// The server id
+			unsigned char server_id = data[0] & 0xFF;
 
-			// The packet builder instance
-			auto bldr = new Genesis::Common::Networking::Packets::PacketBuilder(opcode);
+			// The player id
+			unsigned int player_id = ((data[1] & 0xFF) + ((data[2] & 0xFF) << 8) + ((data[3] & 0xFF) << 16) + ((data[4] & 0xFF) << 24));
 
-			// Write the request id
-			bldr->write_int(request_id);
+			// Copy the data into the request instance
+			std::memcpy(&request, data + 5, sizeof(request));
 
 			// The MySQL connection
 			auto connection = Genesis::Database::DatabaseServer::get_instance()->get_connector()->get_connection();
@@ -76,53 +76,60 @@ namespace Genesis::Database::Io::Packets::Impl {
 			std::auto_ptr<sql::ResultSet> result;
 
 			// Reset the prepared statement
-			prepared.reset(connection->prepareStatement("CALL genesis_userdata.validate_game_connect(?, ?, @result)"));
+			prepared.reset(connection->prepareStatement("CALL genesis_gamedata.create_character(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, @result)"));
 
-			// Attempt to catch any errors thrown
-			try {
+			// The character name
+			std::string character_name((char*) request.name);
 
-				// The identity keys
-				std::string key((char*) handshake.identity_keys);
+			// Define the procedure details
+			prepared->setInt(1, server_id);
+			prepared->setInt(2, player_id);
+			prepared->setString(3, sql::SQLString(character_name));
+			prepared->setInt(4, request.race);
+			prepared->setInt(5, request.mode);
+			prepared->setInt(6, request.profession);
+			prepared->setInt(7, request.hair);
+			prepared->setInt(8, request.face);
+			prepared->setInt(9, request.height);
+			prepared->setInt(10, request.gender);
 
-				// Set the user id and identity keys
-				prepared->setInt(1, handshake.user_id);
-				prepared->setString(2, sql::SQLString(key));
+			// Execute the prepared statement
+			prepared->execute();
 
-				// Execute the prepared statement
-				prepared->execute();
+			// Retrieve the results
+			result.reset(statement->executeQuery("SELECT @result as $result"));
 
-				// Retrieve the results
-				result.reset(statement->executeQuery("SELECT @result as $result"));
+			// Loop through the results
+			if (result->next()) {
+				
+				// The auth response stucture
+				Genesis::Common::Database::Structs::Auth::AuthResponse auth_response;
 
-				// If a result exists
-				if (result->next()) {
+				// The packet builder instance
+				auto bldr = new Genesis::Common::Networking::Packets::PacketBuilder(opcode);
 
-					// The result
-					unsigned char response = (unsigned char) result->getInt("$result");
+				// Write the request id
+				bldr->write_int(request_id);
 
-					// Write the result
-					bldr->write_byte(response);
+				// Write the result
+				bldr->write_byte((unsigned char) result->getInt("$result"));
 
-				}
+				// Write the packet
+				session->write(bldr->to_packet());
 
-			} catch (sql::SQLException &e) {
-
-				// Log the error
-				genesis_logger->error(e.what());
+				// Delete the packet builder
+				delete bldr;
 			}
-
-
-			// Write the packet
-			session->write(bldr->to_packet());
 
 			// Close the statement
 			statement->close();
 
-			// Delete the packet builder and statement instances
-			delete bldr;
+			// Delete the statement
 			delete statement;
+
+			// Delete the connection
 			delete connection;
-			
+
 			// Return true
 			return true;
 		}

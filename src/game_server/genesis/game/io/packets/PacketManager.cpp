@@ -38,6 +38,8 @@ Genesis::Game::Io::Packets::PacketManager::PacketManager() {
 
 	// Define the packet handlers
 	this->handlers[Opcodes::GAME_HANDSHAKE] = new Genesis::Game::Io::Packets::Impl::GameHandshakePacketHandler();
+	this->handlers[Opcodes::AVAILABLE_CHARACTER_NAME] = new Genesis::Game::Io::Packets::Impl::CheckAvailableNamePacketHandler();
+	this->handlers[Opcodes::CREATE_CHARACTER] = new Genesis::Game::Io::Packets::Impl::CreateCharacterPacketHandler();
 }
 
 /**

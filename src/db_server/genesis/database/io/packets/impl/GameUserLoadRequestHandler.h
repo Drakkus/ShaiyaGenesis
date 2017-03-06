@@ -121,7 +121,7 @@ namespace Genesis::Database::Io::Packets::Impl {
 				genesis_logger->error(e.what());
 			}
 
-			// Close the prepared
+			// Close the prepared statement
 			prepared->close();
 
 			// Write the packet

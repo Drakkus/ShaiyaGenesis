@@ -66,6 +66,17 @@ namespace Genesis::Common::Database::Opcodes {
 	 * of a game account to be loaded from the database, and sent to the game server.
 	 */
 	const unsigned short GAME_USER_LOAD = 6;
+
+	/**
+	 * Checks if a character name is available.
+	 */
+	const unsigned short CHECK_AVAILABLE_NAME = 7;
+
+	/**
+	 * Handles the creation of a character
+	 */
+	const unsigned short CREATE_CHARACTER = 8;
+
 }
 
 #endif

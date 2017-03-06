@@ -19,13 +19,31 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#ifndef GENESIS_GAME_IO_PACKETS_IMPL_HANDLERS_H
-#define GENESIS_GAME_IO_PACKETS_IMPL_HANDLERS_H
+#include "SendPlayerFactionTask.h"
 
-// A header to include all packet handlers
-#include "DefaultPacketHandler.h"
-#include "GameHandshakePacketHandler.h"
-#include "CheckAvailableNamePacketHandler.h"
-#include "CreateCharacterPacketHandler.h"
+#include <genesis/common/networking/packets/PacketBuilder.h>
+#include <genesis/common/packets/Opcodes.h>
 
-#endif
+// Use the task implementation namespace
+using namespace Genesis::Game::World::Pulse::Task::Impl;
+
+/**
+ * Handle the sending of a player's faction
+ */
+void SendPlayerFactionTask::execute() {
+
+	// The packet builder instance
+	auto bldr = new Genesis::Common::Networking::Packets::PacketBuilder(Genesis::Common::Packets::Opcodes::ACCOUNT_FACTION);
+
+	// Write the faction
+	bldr->write_byte(player->get_faction());
+
+	// Write the maximum selectable game mode
+	bldr->write_byte(player->get_max_game_mode());
+
+	// Write the packet
+	player->write(bldr->to_packet());
+
+	// Delete the packet builder
+	delete bldr;
+}

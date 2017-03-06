@@ -80,8 +80,15 @@ namespace Genesis::Database::Io::Packets::Impl {
 				// Execute the statement
 				statement->execute();
 
+				// Close the statement
+				statement->close();
+				
 				// Delete the statement instance
 				delete statement;
+
+				// Delete the connection
+				delete connection;
+
 			} catch (sql::SQLException &e) {
 				
 				// Log the exception

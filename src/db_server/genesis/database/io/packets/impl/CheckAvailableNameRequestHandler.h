@@ -19,8 +19,8 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#ifndef GENESIS_DATABASE_IO_PACKETS_IMPL_USERGAMECONNECTREQUESTHANDLER_H
-#define GENESIS_DATABASE_IO_PACKETS_IMPL_USERGAMECONNECTREQUESTHANDLER_H
+#ifndef GENESIS_DATABASE_IO_PACKETS_IMPL_CHECKAVAILABLENAMEREQUESTHANDLER_H
+#define GENESIS_DATABASE_IO_PACKETS_IMPL_CHECKAVAILABLENAMEREQUESTHANDLER_H
 
 #include <genesis/database/io/packets/PacketHandler.h>
 #include <genesis/database/DatabaseServer.h>
@@ -31,10 +31,10 @@
 #include <iostream>
 
 namespace Genesis::Database::Io::Packets::Impl {
-	class UserGameConnectRequestHandler : public PacketHandler {
+	class CheckAvailableNameRequestHandler : public PacketHandler {
 
 		/**
-		 * Handles the verification of a game handshake request
+		 * Handles the checking of an available character name
 		 *
 		 * @param session
 		 *		The session instance
@@ -51,17 +51,14 @@ namespace Genesis::Database::Io::Packets::Impl {
 		bool handle(Genesis::Common::Networking::Server::Session::ServerSession* session, 
 				unsigned int length, unsigned short opcode, unsigned int request_id, unsigned char* data) override {
 
-			// The game handshake request structure
-			Genesis::Common::Database::Structs::Game::GameHandshakeRequest handshake;
+			// The name array
+			char name_array[length];
 
-			// Copy the handshake data
-			std::memcpy(&handshake, data, sizeof(handshake));
+			// Copy the name
+			std::memcpy(&name_array, data, length);
 
-			// The packet builder instance
-			auto bldr = new Genesis::Common::Networking::Packets::PacketBuilder(opcode);
-
-			// Write the request id
-			bldr->write_int(request_id);
+			// The name to check
+			std::string name(name_array);
 
 			// The MySQL connection
 			auto connection = Genesis::Database::DatabaseServer::get_instance()->get_connector()->get_connection();
@@ -76,53 +73,45 @@ namespace Genesis::Database::Io::Packets::Impl {
 			std::auto_ptr<sql::ResultSet> result;
 
 			// Reset the prepared statement
-			prepared.reset(connection->prepareStatement("CALL genesis_userdata.validate_game_connect(?, ?, @result)"));
+			prepared.reset(connection->prepareStatement("CALL genesis_gamedata.check_available_name(?, @result)"));
 
-			// Attempt to catch any errors thrown
-			try {
+			// Define the username, password, and ip address
+			prepared->setString(1, sql::SQLString(name));
 
-				// The identity keys
-				std::string key((char*) handshake.identity_keys);
+			// Execute the prepared statement
+			prepared->execute();
 
-				// Set the user id and identity keys
-				prepared->setInt(1, handshake.user_id);
-				prepared->setString(2, sql::SQLString(key));
+			// Retrieve the results
+			result.reset(statement->executeQuery("SELECT @result as $result"));
 
-				// Execute the prepared statement
-				prepared->execute();
+			// Loop through the results
+			if (result->next()) {
+				
+				// The auth response stucture
+				Genesis::Common::Database::Structs::Auth::AuthResponse auth_response;
 
-				// Retrieve the results
-				result.reset(statement->executeQuery("SELECT @result as $result"));
+				// The packet builder instance
+				auto bldr = new Genesis::Common::Networking::Packets::PacketBuilder(opcode);
 
-				// If a result exists
-				if (result->next()) {
+				// Write the request id
+				bldr->write_int(request_id);
 
-					// The result
-					unsigned char response = (unsigned char) result->getInt("$result");
+				// Write the result
+				bldr->write_byte((unsigned char) result->getInt("$result"));
 
-					// Write the result
-					bldr->write_byte(response);
+				// Write the packet
+				session->write(bldr->to_packet());
 
-				}
-
-			} catch (sql::SQLException &e) {
-
-				// Log the error
-				genesis_logger->error(e.what());
+				// Delete the packet builder
+				delete bldr;
 			}
 
-
-			// Write the packet
-			session->write(bldr->to_packet());
-
-			// Close the statement
-			statement->close();
-
-			// Delete the packet builder and statement instances
-			delete bldr;
+			// Delete the statement
 			delete statement;
+
+			// Delete the connection
 			delete connection;
-			
+
 			// Return true
 			return true;
 		}

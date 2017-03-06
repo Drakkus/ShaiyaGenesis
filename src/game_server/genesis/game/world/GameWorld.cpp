@@ -87,8 +87,20 @@ void GameWorld::init(unsigned char server_id) {
  *		The player instance
  */
 void GameWorld::load_player(Genesis::Game::Model::Entity::Player::Player* player) {
-std::cout << "load index: " << player->get_index() << std::endl;
 
+	// Add the player instance
+	this->players[player->get_index()] = player;
+	
 	// Push the task to the pulse handler
-	//pulse_handler->offer(new Genesis::Game::World::Pulse::Task::Impl::LoadPlayerTask(player));
+	pulse_handler->offer(new Genesis::Game::World::Pulse::Task::Impl::LoadPlayerTask(player));
+}
+
+/**
+ * Gets the player instance for an index
+ *
+ * @param index
+ *		The index
+ */
+Genesis::Game::Model::Entity::Player::Player* GameWorld::get_player_for_index(unsigned int index) {
+	return this->players[index];
 }

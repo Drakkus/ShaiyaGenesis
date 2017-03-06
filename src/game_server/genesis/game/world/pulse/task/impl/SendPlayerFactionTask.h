@@ -19,13 +19,40 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#ifndef GENESIS_GAME_IO_PACKETS_IMPL_HANDLERS_H
-#define GENESIS_GAME_IO_PACKETS_IMPL_HANDLERS_H
+#ifndef GENESIS_GAME_WORLD_PULSE_TASK_IMPL_SENDPLAYERFACTIONTASK_H
+#define GENESIS_GAME_WORLD_PULSE_TASK_IMPL_SENDPLAYERFACTIONTASK_H
 
-// A header to include all packet handlers
-#include "DefaultPacketHandler.h"
-#include "GameHandshakePacketHandler.h"
-#include "CheckAvailableNamePacketHandler.h"
-#include "CreateCharacterPacketHandler.h"
+#include <genesis/game/world/pulse/task/Task.h>
+#include <genesis/game/model/entity/player/Player.h>
 
+#include <boost/shared_ptr.hpp>
+
+#include <iostream>
+
+/**
+ * Represents a task used to send the player's faction
+ */
+namespace Genesis::Game::World::Pulse::Task::Impl {
+	class SendPlayerFactionTask : public Task {
+
+		public:
+
+			/**
+			 * The constructor for this task, which will define the player instance
+			 * to operate on
+			 *
+			 * @param player
+			 *		The player instance
+			 */
+			SendPlayerFactionTask(Genesis::Game::Model::Entity::Player::Player* player) : player(player) {}
+
+			// Execute the task
+			void execute();
+
+		private:
+
+			// The player instance
+			Genesis::Game::Model::Entity::Player::Player* player;
+	};
+}
 #endif

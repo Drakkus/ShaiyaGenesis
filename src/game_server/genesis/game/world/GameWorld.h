@@ -56,19 +56,27 @@ namespace Genesis::Game::World {
 			unsigned char get_server_id() {
 				return server_id;
 			}
-			
-			Genesis::Game::World::Pulse::GamePulseHandler* get_pulse_handler() {
-				return pulse_handler;
+		
+			// Gets the pulse handler for this game	
+			void push_task(Genesis::Game::World::Pulse::Task::Task* task) {
+				this->pulse_handler->offer(task);
 			}
+
 			// Gets the database client instance
 			Genesis::Common::Networking::Client::GenesisClient* get_db_client() {
 				return this->db_client;
 			}
 			
+			// Gets the player index of an index
+			Genesis::Game::Model::Entity::Player::Player* get_player_for_index(unsigned int index);
+			
 		private:
 			
 			// The server id
 			unsigned char server_id;
+			
+			// The map of indexes to player instance
+			std::map<unsigned int, Genesis::Game::Model::Entity::Player::Player*> players;
 			
 			// The GenesisClient instance
 			Genesis::Common::Networking::Client::GenesisClient* db_client;

@@ -42,6 +42,8 @@ Genesis::Database::Io::Packets::PacketManager::PacketManager() {
 	this->handlers[Opcodes::DELETE_SESSION] = new Genesis::Database::Io::Packets::Impl::DeleteSessionRequestHandler();
 	this->handlers[Opcodes::USER_GAME_CONNECT] = new Genesis::Database::Io::Packets::Impl::UserGameConnectRequestHandler();
 	this->handlers[Opcodes::GAME_USER_LOAD] = new Genesis::Database::Io::Packets::Impl::GameUserLoadRequestHandler();
+	this->handlers[Opcodes::CHECK_AVAILABLE_NAME] = new Genesis::Database::Io::Packets::Impl::CheckAvailableNameRequestHandler();
+	this->handlers[Opcodes::CREATE_CHARACTER] = new Genesis::Database::Io::Packets::Impl::CreateCharacterRequestHandler();
 }
 
 /**

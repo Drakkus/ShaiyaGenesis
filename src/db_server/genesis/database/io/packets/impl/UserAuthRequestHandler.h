@@ -132,9 +132,15 @@ namespace Genesis::Database::Io::Packets::Impl {
 				delete bldr;
 			}
 
+			// Close the statement
+			statement->close();
+
 			// Delete the statement
 			delete statement;
 
+			// Delete the connection
+			delete connection;
+			
 			// Return true
 			return true;
 		}

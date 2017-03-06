@@ -107,10 +107,30 @@ namespace Genesis::Common::Networking::Server::Session {
 			 */
 			unsigned char* get_buffer();
 
+			/**
+			 * Sets the game player index for this session
+			 *
+			 * @param index
+			 *		The index
+			 */
+			void set_game_index(unsigned int index) {
+				this->index = index;
+			}
+
+			/**
+			 * Gets the index of the game player
+			 */
+			unsigned int get_game_index() {
+				return index;
+			}
+
 		private:
 
 			// The socket connection instance
 			boost::asio::ip::tcp::socket socket;
+
+			// The session index (used by the game server)
+			unsigned int index;
 
 			// The identity keys for this session
 			unsigned char identity_keys[16];

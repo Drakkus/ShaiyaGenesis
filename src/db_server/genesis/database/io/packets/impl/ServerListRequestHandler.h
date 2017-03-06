@@ -111,6 +111,9 @@ namespace Genesis::Database::Io::Packets::Impl {
 			// Delete the statement instance
 			delete statement;
 
+			// Delete the connection
+			delete connection;
+			
 			// Write the packet
 			session->write(bldr->to_packet());
 

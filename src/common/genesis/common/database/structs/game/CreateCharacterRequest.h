@@ -19,13 +19,46 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#ifndef GENESIS_GAME_IO_PACKETS_IMPL_HANDLERS_H
-#define GENESIS_GAME_IO_PACKETS_IMPL_HANDLERS_H
+#ifndef GENESIS_COMMON_DATABASE_DATABASE_STRUCTS_GAME_CREATECHARACTERREQUEST_H
+#define GENESIS_COMMON_DATABASE_DATABASE_STRUCTS_GAME_CREATECHARACTERREQUEST_H
 
-// A header to include all packet handlers
-#include "DefaultPacketHandler.h"
-#include "GameHandshakePacketHandler.h"
-#include "CheckAvailableNamePacketHandler.h"
-#include "CreateCharacterPacketHandler.h"
+/**
+ * This namespace will contain all the database structures, used by the servers.
+ * This will allow us to easily convert byte streams between the servers to a structure,
+ * through static casting.
+ */
+namespace Genesis::Common::Database::Structs::Game {
 
+	// Represents a request to create a character
+	struct CreateCharacterRequest {
+
+		// An unknown value
+		unsigned char unknown;
+
+		// The race of the character
+		unsigned char race;
+
+		// The mode of the character
+		unsigned char mode;
+
+		// The hair of the character
+		unsigned char hair;
+
+		// The face of the character
+		unsigned char face;
+
+		// The height of the character
+		unsigned char height;
+
+		// The profession of the character (class)
+		unsigned char profession;
+
+		// The gender of the character
+		unsigned char gender;
+
+		// The name of the character
+		char name[19];
+	};
+
+}
 #endif

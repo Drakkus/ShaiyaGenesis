@@ -29,5 +29,7 @@
 #include "DeleteSessionRequestHandler.h"
 #include "UserGameConnectRequestHandler.h"
 #include "GameUserLoadRequestHandler.h"
+#include "CheckAvailableNameRequestHandler.h"
+#include "CreateCharacterRequestHandler.h"
 
 #endif

@@ -19,13 +19,30 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#ifndef GENESIS_GAME_IO_PACKETS_IMPL_HANDLERS_H
-#define GENESIS_GAME_IO_PACKETS_IMPL_HANDLERS_H
+#ifndef GENESIS_COMMON_DATABASE_DATABASE_STRUCTS_GAME_PLAYERINFO_H
+#define GENESIS_COMMON_DATABASE_DATABASE_STRUCTS_GAME_PLAYERINFO_H
 
-// A header to include all packet handlers
-#include "DefaultPacketHandler.h"
-#include "GameHandshakePacketHandler.h"
-#include "CheckAvailableNamePacketHandler.h"
-#include "CreateCharacterPacketHandler.h"
+#include "GameCharacter.h"
 
+/**
+ * This namespace will contain all the database structures, used by the servers.
+ * This will allow us to easily convert byte streams between the servers to a structure,
+ * through static casting.
+ */
+namespace Genesis::Common::Database::Structs::Game {
+
+	// The player's information
+	struct PlayerInfo {
+
+		// The faction of the player
+		unsigned char faction;
+		
+		// The privilege level
+		unsigned char privilege_level;
+		
+		// The characters associated with this account
+		GameCharacter characters[5];
+	};
+
+}
 #endif

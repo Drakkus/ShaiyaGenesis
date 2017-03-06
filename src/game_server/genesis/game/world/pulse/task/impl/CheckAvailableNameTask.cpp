@@ -19,63 +19,49 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#include "LoadPlayerTask.h"
-#include "SendPlayerFactionTask.h"
-#include "SendPlayerCharacterListTask.h"
+#include "CheckAvailableNameTask.h"
 
 #include <genesis/common/networking/packets/PacketBuilder.h>
 #include <genesis/common/database/Opcodes.h>
 #include <genesis/common/packets/Opcodes.h>
-#include <genesis/common/database/structs/game/GameLoadPlayerResponse.h>
 
 #include <genesis/game/world/GameWorld.h>
 
 #include <iostream>
 
 /**
- * Begin loading the details for a player
+ * Begin processing the checking of an available character name
  */
-void Genesis::Game::World::Pulse::Task::Impl::LoadPlayerTask::execute() {
+void Genesis::Game::World::Pulse::Task::Impl::CheckAvailableNameTask::execute() {
 	
+	// The local player
+	auto &local_player = this->player;
+
 	// The client instance
 	auto db_client = Genesis::Game::World::GameWorld::get_instance()->get_db_client();
 
 	// The packet builder instance
-	auto bldr = new Genesis::Common::Networking::Packets::PacketBuilder(Genesis::Common::Database::Opcodes::GAME_USER_LOAD);
+	auto bldr = new Genesis::Common::Networking::Packets::PacketBuilder(Genesis::Common::Database::Opcodes::CHECK_AVAILABLE_NAME);
 
-	// Write the player id
-	bldr->write_int(player->get_index());
+	// Write the name
+	bldr->write_bytes((unsigned char*) name.c_str(), name.length());
 
-	// Write the server id
-	bldr->write_byte(Genesis::Game::World::GameWorld::get_instance()->get_server_id());
-	
-	// The current instance
-	auto current = this;
+	// Write the packet to the database server
+	db_client->write(bldr->to_packet(), [local_player](unsigned char* data, unsigned int length) {
 
-	// The player instance
-	auto &local_player = this->player;
+		// The packet builder instance to write to the player
+		auto bldr = new Genesis::Common::Networking::Packets::PacketBuilder(Genesis::Common::Packets::Opcodes::AVAILABLE_CHARACTER_NAME);
 
-	// Write the packet
-	db_client->write(bldr->to_packet(), [current, local_player](unsigned char* data, unsigned int length) {
+		// Write the result to the player
+		bldr->write_byte(data[0]);
+
+		// Write the packet to the player
+		local_player->write(bldr->to_packet());
+
+		// Delete the packet builder
+		delete bldr;
 		
-		// The response
-		Genesis::Common::Database::Structs::Game::GameLoadPlayerResponse response;
-
-		// Copy the data
-		std::memcpy(&response, data, sizeof(response));
-
-		// Set the player's data
-		local_player->set_faction(response.faction);
-		local_player->set_max_game_mode(response.max_char_mode);
-		local_player->set_privilege_level(response.privilege_level);
-		
-		// Write the player's character list
-		Genesis::Game::World::GameWorld::get_instance()->push_task(new Genesis::Game::World::Pulse::Task::Impl::SendPlayerCharacterListTask(local_player));
-		
-		// Write the player's faction
-		Genesis::Game::World::GameWorld::get_instance()->push_task(new Genesis::Game::World::Pulse::Task::Impl::SendPlayerFactionTask(local_player));
 	});
-
 
 	// Delete the packet builder instance
 	delete bldr;
