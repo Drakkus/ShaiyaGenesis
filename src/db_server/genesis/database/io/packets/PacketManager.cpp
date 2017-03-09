@@ -44,6 +44,7 @@ Genesis::Database::Io::Packets::PacketManager::PacketManager() {
 	this->handlers[Opcodes::GAME_USER_LOAD] = new Genesis::Database::Io::Packets::Impl::GameUserLoadRequestHandler();
 	this->handlers[Opcodes::CHECK_AVAILABLE_NAME] = new Genesis::Database::Io::Packets::Impl::CheckAvailableNameRequestHandler();
 	this->handlers[Opcodes::CREATE_CHARACTER] = new Genesis::Database::Io::Packets::Impl::CreateCharacterRequestHandler();
+	this->handlers[Opcodes::GET_CHARACTER_LIST_DATA] = new Genesis::Database::Io::Packets::Impl::CharacterScreenDataRequestHandler();
 }
 
 /**

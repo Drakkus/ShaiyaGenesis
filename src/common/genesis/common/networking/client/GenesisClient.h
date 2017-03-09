@@ -25,6 +25,7 @@
 #include <string>
 #include <iostream>
 #include <mutex>
+#include <queue>
 
 #include "../packets/Packet.h"
 #include "../packets/PacketBuilder.h"
@@ -32,7 +33,7 @@
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 
-#define MAX_PACKET_LENGTH 1024
+#define MAX_PACKET_LENGTH 4096
 
 namespace Genesis::Common::Networking::Client {
 
@@ -46,6 +47,8 @@ namespace Genesis::Common::Networking::Client {
 			bool connect(std::string address, unsigned short port);
 
 			void handle_read(unsigned char* data, const boost::system::error_code &error, unsigned int bytes_read);
+
+			void process_callbacks();
 
 			/**
 			 * Writes a packet to this session's socket
@@ -70,13 +73,13 @@ namespace Genesis::Common::Networking::Client {
 				// Generate a unique request id
 				while (this->request_map.count(request_id) != 0)
 					request_id = (unsigned int) rand();
-				
+
 				// Store the request
 				this->request_map[request_id] = callback;
 
 				// Unlock the mutex
 				this->mutex.unlock();
-				
+
 				// Write the length
 				data[0] = (length);
 				data[1] = (length >> 8);
@@ -124,8 +127,14 @@ namespace Genesis::Common::Networking::Client {
 
 		private:
 
+			// The queue of pending callbacks
+			std::queue<std::function<void()>> callback_queue;
+
 			// The mutex
 			std::mutex mutex;
+
+			// The callback queue mutex
+			std::mutex callback_queue_mutex;
 
 			// A map containing the request ids, and their callbacks
 			std::map<unsigned int, std::function<void(unsigned char*, unsigned int)>> request_map;
@@ -140,7 +149,7 @@ namespace Genesis::Common::Networking::Client {
 			boost::asio::ip::tcp::socket socket;
 
 			// The array that the client will receive data to
-			unsigned char data[1024];
+			unsigned char data[4096];
 	};
 }
 #endif

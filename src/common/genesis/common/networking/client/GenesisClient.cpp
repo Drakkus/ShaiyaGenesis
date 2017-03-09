@@ -53,6 +53,9 @@ bool Genesis::Common::Networking::Client::GenesisClient::connect(std::string add
 		// The system error
 		boost::system::error_code error = boost::asio::error::host_not_found;
 
+		// The callback processing thread
+		std::thread callback_process(std::bind(&Genesis::Common::Networking::Client::GenesisClient::process_callbacks, this));
+
 		// Loop until no error occurs
 		while (error && iterator != end) {
 			this->socket.close();
@@ -120,14 +123,50 @@ void Genesis::Common::Networking::Client::GenesisClient::handle_read(unsigned ch
 		// Erase the request
 		request_map.erase(request_id);
 
-		// Call the callback
-		callback(packet_data, packet_length - 8);
+		// Unlock the mutex
+		this->mutex.unlock();
 
+		// Lock the callback queue mutex
+		this->callback_queue_mutex.lock();
+
+		// Add the callback to the queue
+		this->callback_queue.push([callback, packet_data, packet_length]() {
+			callback(packet_data, packet_length - 8);
+		});
+
+		// Unlock the callback queue mutex
+		this->callback_queue_mutex.unlock();
 	}
 
 	// Unlock the mutex
 	this->mutex.unlock();
-	
+
 	// Begin reading some data
 	this->socket.async_read_some(boost::asio::buffer(this->data, MAX_PACKET_LENGTH), boost::bind(&Genesis::Common::Networking::Client::GenesisClient::handle_read, this, this->data, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred));
+}
+
+void Genesis::Common::Networking::Client::GenesisClient::process_callbacks() {
+
+	// While the client is running
+	while (true) {
+
+		// Lock the mutex
+		this->callback_queue_mutex.lock();
+
+		// If there are tasks to be processed
+		if (callback_queue.size() != 0) {
+
+			// The callback to execute
+			auto callback = callback_queue.front();
+
+			// Pop the task from the queue
+			callback_queue.pop();
+		
+			// Execute the task
+			callback();
+		}
+
+		// Unlock the mutex
+		this->callback_queue_mutex.unlock();
+	}
 }

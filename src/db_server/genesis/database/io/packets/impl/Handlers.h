@@ -31,5 +31,6 @@
 #include "GameUserLoadRequestHandler.h"
 #include "CheckAvailableNameRequestHandler.h"
 #include "CreateCharacterRequestHandler.h"
+#include "CharacterScreenDataRequestHandler.h"
 
 #endif

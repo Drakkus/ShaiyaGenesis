@@ -36,7 +36,7 @@
  * Begin loading the details for a player
  */
 void Genesis::Game::World::Pulse::Task::Impl::LoadPlayerTask::execute() {
-	
+
 	// The client instance
 	auto db_client = Genesis::Game::World::GameWorld::get_instance()->get_db_client();
 
@@ -48,16 +48,13 @@ void Genesis::Game::World::Pulse::Task::Impl::LoadPlayerTask::execute() {
 
 	// Write the server id
 	bldr->write_byte(Genesis::Game::World::GameWorld::get_instance()->get_server_id());
-	
-	// The current instance
-	auto current = this;
 
 	// The player instance
 	auto &local_player = this->player;
 
 	// Write the packet
-	db_client->write(bldr->to_packet(), [current, local_player](unsigned char* data, unsigned int length) {
-		
+	db_client->write(bldr->to_packet(), [local_player](unsigned char* data, unsigned int length) {
+
 		// The response
 		Genesis::Common::Database::Structs::Game::GameLoadPlayerResponse response;
 
@@ -68,14 +65,14 @@ void Genesis::Game::World::Pulse::Task::Impl::LoadPlayerTask::execute() {
 		local_player->set_faction(response.faction);
 		local_player->set_max_game_mode(response.max_char_mode);
 		local_player->set_privilege_level(response.privilege_level);
-		
+
 		// Write the player's character list
 		Genesis::Game::World::GameWorld::get_instance()->push_task(new Genesis::Game::World::Pulse::Task::Impl::SendPlayerCharacterListTask(local_player));
-		
+
 		// Write the player's faction
 		Genesis::Game::World::GameWorld::get_instance()->push_task(new Genesis::Game::World::Pulse::Task::Impl::SendPlayerFactionTask(local_player));
-	});
 
+	});
 
 	// Delete the packet builder instance
 	delete bldr;

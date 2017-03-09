@@ -67,9 +67,6 @@ void GamePulseHandler::pulse() {
 		
 			// Execute the task
 			task->execute();
-
-			// Delete the task
-			delete task;
 		}
 
 		// Unlock the mutex

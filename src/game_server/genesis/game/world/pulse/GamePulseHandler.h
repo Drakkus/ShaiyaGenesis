@@ -47,6 +47,7 @@ namespace Genesis::Game::World::Pulse {
 
 			// Offers a new task to the pulse handler
 			void offer(Genesis::Game::World::Pulse::Task::Task* task);
+			
 		private:
 
 			// If the pulse handler is running

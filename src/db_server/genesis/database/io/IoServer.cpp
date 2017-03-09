@@ -79,7 +79,7 @@ bool IoServer::initialise(unsigned short port) {
 void IoServer::on_connect(Genesis::Common::Networking::Server::Session::ServerSession* session) {
 
 	// The list of allowed hosts
-	auto hosts = config_manager->get_value_or_default<std::string>("AllowedHosts", "127.0.0.2");
+	auto hosts = config_manager->get_value_or_default<std::string>("AllowedHosts", "127.0.0.1");
 
 	// A vector containing the allowed hosts
 	std::vector<std::string> allowed_hosts;
@@ -108,7 +108,7 @@ void IoServer::on_connect(Genesis::Common::Networking::Server::Session::ServerSe
 	}
 
 	// If the host does match
-	genesis_logger->info(boost::str(boost::format("Accepted connection from address: %s!") % session->get_remote_address().c_str()));
+	genesis_logger->info("Accepted connection from address: %s!", {session->get_remote_address().c_str()});
 }
 
 /**

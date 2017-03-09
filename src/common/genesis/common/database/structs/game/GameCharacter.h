@@ -32,12 +32,12 @@ namespace Genesis::Common::Database::Structs::Game {
 	// Represents a character
 	struct GameCharacter {
 
+		// The slot
+		unsigned char slot;
+		
 		// The character id
 		unsigned int character_id;
-
-		// Not sure
-		unsigned int unknown;
-
+		
 		// THe level of the character
 		unsigned short level;
 
@@ -46,6 +46,9 @@ namespace Genesis::Common::Database::Structs::Game {
 
 		// The mode of the character
 		unsigned char game_mode;
+
+		// The hair of the character
+		unsigned char hair;
 
 		// The face of the character
 		unsigned char face;
@@ -70,20 +73,14 @@ namespace Genesis::Common::Database::Structs::Game {
 		unsigned short wisdom;
 		unsigned short luck;
 
-		// Unknown array
-		unsigned char unknown_array[12];
-		
 		// The item types
-		unsigned char item_types[18];
+		unsigned char item_types[17] = {0};
 
 		// The item type ids
-		unsigned char item_type_ids[18];
-
-		// A series of null bytes
-		unsigned char null_bytes[535];
+		unsigned char item_type_ids[17] = {0};
 
 		// The name of the character
-		unsigned char name[32];
+		unsigned char name[32] = {'\0'};
 	};
 
 }

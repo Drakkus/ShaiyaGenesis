@@ -77,6 +77,11 @@ namespace Genesis::Common::Database::Opcodes {
 	 */
 	const unsigned short CREATE_CHARACTER = 8;
 
+	/**
+	 * Gets the data displayed by the character list for a player
+	 */
+	const unsigned short GET_CHARACTER_LIST_DATA = 9;
+
 }
 
 #endif

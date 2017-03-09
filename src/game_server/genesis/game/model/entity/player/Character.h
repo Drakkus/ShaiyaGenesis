@@ -19,61 +19,50 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#ifndef GENESIS_GAME_MODEL_ENTITY_ENTITY_H
-#define GENESIS_GAME_MODEL_ENTITY_ENTITY_H
+#ifndef GENESIS_GAME_MODEL_ENTITY_PLAYER_CHARACTER_H
+#define GENESIS_GAME_MODEL_ENTITY_PLAYER_CHARACTER_H
 
-#include <genesis/game/model/entity/Attributes.h>
+#include <genesis/game/model/entity/Entity.h>
 
-#include <string>
+#include <genesis/common/networking/packets/Packet.h>
+
+// Forward declaration of the player class
+namespace Genesis::Game::Model::Entity::Player { class Player; }
 
 /**
- * Represents an entity that can interact with the game world (ie all mobs, characters, npcs)
+ * Represents a character instance than can interact with the game world
  */
-namespace Genesis::Game::Model::Entity {
-	class Entity {
+namespace Genesis::Game::Model::Entity::Player {
+	class Character : public Entity {
 
 		public:
 
 			/**
-			 * The constructor for this entity instance
+			 * The constructor for this {@code Character} instance.
+			 *
+			 * @param player
+			 *		The player instance
 			 */
-			Entity(unsigned int index) : index(index) {}
+			Character(Genesis::Game::Model::Entity::Player::Player* player, int character_id) : player(player), Entity(character_id) {}
 
 			/**
-			 * The destructor for this entity
+			 * Writes a player to the player's session
+			 *
+			 * @param packet
+			 * 		The packet instance
 			 */
-			~Entity() {
+			void write(Genesis::Common::Networking::Packets::Packet* packet);
 
-				// Call the destroy function
-				this->destroy();
-			}
-
-			// The destructor function
-			void destroy();
-
-			// Gets the index of this entity
-			unsigned int get_index();
-
-			// Gets the attributes instance for this entity
-			Genesis::Game::Model::Entity::Attributes* get_attributes();
-			
-			// Gets the name of the entity
-			std::string& get_name();
-
-			// Sets the name of the entity
-			void set_name(const std::string& name);
+			// Checks if this character instance is initialised and ready
+			bool is_initialised();
 
 		private:
 
-			// The index of the entity (character id, mob unique index, etc)
-			unsigned int index;
+			// The player instance that this character is associated with
+			Genesis::Game::Model::Entity::Player::Player* player;
 
-			// The name of the entity
-			std::string name;
-
-			// The attributes of the entity
-			Genesis::Game::Model::Entity::Attributes* attributes = new Genesis::Game::Model::Entity::Attributes();
-			
+			// If the character instance is ready to enter the game world
+			bool initialised = false;
 	};
 }
 #endif

@@ -23,6 +23,13 @@
 
 #include <genesis/common/networking/packets/PacketBuilder.h>
 #include <genesis/common/packets/Opcodes.h>
+#include <genesis/common/database/Opcodes.h>
+
+#include <genesis/game/world/GameWorld.h>
+
+#include <iostream>
+#include <vector>
+#include <algorithm>
 
 // Use the task implementation namespace
 using namespace Genesis::Game::World::Pulse::Task::Impl;
@@ -32,131 +39,133 @@ using namespace Genesis::Game::World::Pulse::Task::Impl;
  */
 void SendPlayerCharacterListTask::execute() {
 
-	for (int i = 1; i < 5; i++) {
+	// The player instance
+	auto &local_player = this->player;
 
-		// The packet builder instance
-		auto bldr = new Genesis::Common::Networking::Packets::PacketBuilder(Genesis::Common::Packets::Opcodes::CHARACTER_LIST);
+	// The client instance
+	auto db_client = Genesis::Game::World::GameWorld::get_instance()->get_db_client();
 
-		// Write the character slot
-		bldr->write_byte(i);
-
-		// Write the character id
-		bldr->write_int(0);
-
-		// Write the packet
-		player->write(bldr->to_packet());
-
-		// Delete the packet builder
-		delete bldr;
-	}
-	
 	// The packet builder instance
-	auto bldr = new Genesis::Common::Networking::Packets::PacketBuilder(Genesis::Common::Packets::Opcodes::CHARACTER_LIST);
+	auto bldr = new Genesis::Common::Networking::Packets::PacketBuilder(Genesis::Common::Database::Opcodes::GET_CHARACTER_LIST_DATA);
 
-	// Write the character slot
-	bldr->write_byte(0);
+	// Write the player id
+	bldr->write_int(player->get_index());
 
-	// Write the character id
-	bldr->write_int(1);
+	// Write the server id
+	bldr->write_byte(Genesis::Game::World::GameWorld::get_instance()->get_server_id());
 
-	// Don't know
-	bldr->write_int(0);
+	// Write the packet to the database server
+	db_client->write(bldr->to_packet(), [local_player](unsigned char* data, unsigned int length) {
 
-	// The level
-	bldr->write_short(80);
 
-	// The race
-	bldr->write_byte(0);
+		// The number of characters to read for this player
+		unsigned char character_count = (data[0] & 0xFF);
 
-	// The mode
-	bldr->write_byte(3);
+		// The vector of slots
+		std::vector<int> slots {0, 1, 2, 3, 4};
 
-	// The hair of the character
-	bldr->write_byte(2);
+		// Loop through the characters
+		for (int i = 0; i < character_count; i++) {
 
-	// The face
-	bldr->write_byte(1);
+			// The character instance
+			Genesis::Common::Database::Structs::Game::GameCharacter character;
 
-	// The height
-	bldr->write_byte(2);
+			// Populate the character instance
+			std::memcpy(&character, (data + 1 + (i * sizeof(character))), sizeof(character));
 
-	// The class
-	bldr->write_byte(0);
+			// Remove the slot from the vector
+			slots.erase(std::remove(slots.begin(), slots.end(), character.slot), slots.end());
 
-	// The gender
-	bldr->write_byte(1);
+			// The packet builder instance
+			auto bldr = new Genesis::Common::Networking::Packets::PacketBuilder(Genesis::Common::Packets::Opcodes::CHARACTER_LIST);
 
-	// The map id
-	bldr->write_short(42);
+			// Write the slot
+			bldr->write_byte(character.slot);
 
-	// Write the stats
-	bldr->write_short(111); // STR
-	bldr->write_short(222); // DEX
-	bldr->write_short(333); // REC
-	bldr->write_short(444); // INT
-	bldr->write_short(555); // WIS
-	bldr->write_short(666); // LUC
+			// Write the character id
+			bldr->write_int(character.character_id);
 
-	// Not sure
-	bldr->write_byte(0);
-	bldr->write_byte(0);
-	bldr->write_byte(0);
-	bldr->write_byte(0);
-	bldr->write_byte(255);
-	bldr->write_byte(255);
-	bldr->write_byte(0);
-	bldr->write_byte(0x11);
-	bldr->write_byte(0x12);
-	bldr->write_byte(0x14);
-	bldr->write_byte(0x15);
+			// Unknown
+			bldr->write_int(0);
 
-	// Item types
-	bldr->write_byte(6); // Weapon
-	bldr->write_byte(19); // Shield
-	bldr->write_byte(0);
-	bldr->write_byte(0);
-	bldr->write_byte(0);
-	bldr->write_byte(0);
-	bldr->write_byte(0);
-	bldr->write_byte(0);
-	bldr->write_byte(0);
-	bldr->write_byte(120); // Pet
-	bldr->write_byte(0); // Costume
-	bldr->write_byte(121); // Wings
-	bldr->write_byte(0);
-	bldr->write_byte(0);
-	bldr->write_byte(0);
-	bldr->write_byte(0);
-	bldr->write_byte(0);
+			// Write the character's level
+			bldr->write_short(character.level);
 
-	bldr->write_byte(215); // Weapon
-	bldr->write_byte(138); // Shield
-	bldr->write_byte(0);
-	bldr->write_byte(0);
-	bldr->write_byte(0);
-	bldr->write_byte(0);
-	bldr->write_byte(0);
-	bldr->write_byte(0);
-	bldr->write_byte(1);
-	bldr->write_byte(43); // Pet
-	bldr->write_byte(0); // Costume
-	bldr->write_byte(3); // Wings
-	bldr->write_byte(0);
-	bldr->write_byte(0);
-	bldr->write_byte(0);
-	bldr->write_byte(0);
-	bldr->write_byte(0);
+			// The race of the character
+			bldr->write_byte(character.race);
 
-	// Write 535 null bytes
-	for (int i = 0; i < 535; i++) {
-		bldr->write_byte(0);
-	}
+			// The mode of the character
+			bldr->write_byte(character.game_mode);
 
-	// Write the character name
-	bldr->write_bytes((unsigned char*) "Cups", 4);
+			// The hair of the character
+			bldr->write_byte(character.hair);
 
-	// Write the packet
-	player->write(bldr->to_packet());
+			// The face of the character
+			bldr->write_byte(character.face);
+
+			// The height of the character
+			bldr->write_byte(character.height);
+			// The class of the character
+			bldr->write_byte(character.profession);
+
+			// The gender of the character
+			bldr->write_byte(character.gender);
+
+			// The map that the character is in
+			bldr->write_short(character.map);
+
+			// The stats of the character
+			bldr->write_short(character.strength);
+			bldr->write_short(character.dexterity);
+			bldr->write_short(character.resistance);
+			bldr->write_short(character.intelligence);
+			bldr->write_short(character.wisdom);
+			bldr->write_short(character.luck);
+
+			// Unknown array
+			for (int j = 0; j < 11; j++)
+				bldr->write_byte(0);
+
+			// The item types
+			bldr->write_bytes((unsigned char*) character.item_types, sizeof(character.item_types));
+
+			// The item type ids
+			bldr->write_bytes((unsigned char*) character.item_type_ids, sizeof(character.item_type_ids));
+
+			// Write 535 null bytes
+			for (int j = 0; j < 535; j++)
+				bldr->write_byte(0);
+
+			// Write the character name
+			bldr->write_bytes((unsigned char*) character.name, sizeof(character.name));
+
+			// Write the character data
+			local_player->write(bldr->to_packet());
+
+			// Delete the packet builder
+			delete bldr;
+
+		}
+
+		// Loop through the empty slots
+		for (auto slot : slots) {
+
+			// The packet builder instance
+			auto bldr = new Genesis::Common::Networking::Packets::PacketBuilder(Genesis::Common::Packets::Opcodes::CHARACTER_LIST);
+
+			// Write the slot
+			bldr->write_byte(slot);
+
+			// Write the empty character id
+			bldr->write_int(0);
+
+			// Write the character data
+			local_player->write(bldr->to_packet());
+
+			// Delete the packet builder
+			delete bldr;
+		}
+	});
 
 	// Delete the packet builder
 	delete bldr;

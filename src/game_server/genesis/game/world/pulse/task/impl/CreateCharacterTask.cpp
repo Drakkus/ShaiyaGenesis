@@ -20,6 +20,7 @@
 * SOFTWARE.
 */
 #include "CreateCharacterTask.h"
+#include "SendPlayerCharacterListTask.h"
 
 #include <genesis/common/networking/packets/PacketBuilder.h>
 #include <genesis/common/database/Opcodes.h>
@@ -61,6 +62,9 @@ void Genesis::Game::World::Pulse::Task::Impl::CreateCharacterTask::execute() {
 
 	// Write the request to the database server
 	db_client->write(bldr->to_packet(), [local_player, local_request](unsigned char* data, unsigned int length) {
+
+		// Write the player's character list
+		Genesis::Game::World::GameWorld::get_instance()->push_task(new Genesis::Game::World::Pulse::Task::Impl::SendPlayerCharacterListTask(local_player));
 
 		// The packet builder instance
 		auto bldr = new Genesis::Common::Networking::Packets::PacketBuilder(Genesis::Common::Packets::Opcodes::CREATE_CHARACTER);

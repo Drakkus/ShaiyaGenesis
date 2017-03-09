@@ -19,8 +19,8 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#ifndef GENESIS_DATABASE_IO_PACKETS_IMPL_GAMEUSERLOADREQUESTHANDLER_H
-#define GENESIS_DATABASE_IO_PACKETS_IMPL_GAMEUSERLOADREQUESTHANDLER_H
+#ifndef GENESIS_DATABASE_IO_PACKETS_IMPL_CHARACTERSCREENDATAREQUESTHANDLER_H
+#define GENESIS_DATABASE_IO_PACKETS_IMPL_CHARACTERSCREENDATAREQUESTHANDLER_H
 
 #include <genesis/database/io/packets/PacketHandler.h>
 #include <genesis/database/DatabaseServer.h>
@@ -33,10 +33,10 @@
 #include <iostream>
 
 namespace Genesis::Database::Io::Packets::Impl {
-	class GameUserLoadRequestHandler : public PacketHandler {
+	class CharacterScreenDataRequestHandler : public PacketHandler {
 
 		/**
-		 * Handles the loading of a player instance
+		 * Handles the loading of character data
 		 *
 		 * @param session
 		 *		The session instance
@@ -63,7 +63,7 @@ namespace Genesis::Database::Io::Packets::Impl {
 			std::auto_ptr<sql::Connection> connection(Genesis::Database::DatabaseServer::get_instance()->get_connector()->get_connection());
 			
 			// The prepared statement
-			std::auto_ptr<sql::PreparedStatement> prepared(connection->prepareStatement("CALL genesis_gamedata.load_game_account(?, ?)"));
+			std::auto_ptr<sql::PreparedStatement> prepared(connection->prepareStatement("CALL genesis_gamedata.load_game_characters(?, ?)"));
 
 			// The result set
 			std::auto_ptr<sql::ResultSet> result;
@@ -86,17 +86,48 @@ namespace Genesis::Database::Io::Packets::Impl {
 				// Execute the query
 				result.reset(prepared->executeQuery());
 
+				// The character count
+				bldr->write_byte(result->rowsCount());
+
 				// While there is a result to be read
 				while (result->next()) {
 						
-					// Write the faction
-					bldr->write_byte((unsigned char) result->getInt("faction"));
+					// The character instance
+					Genesis::Common::Database::Structs::Game::GameCharacter character;
 
-					// Write the max char mode
-					bldr->write_byte((unsigned char) result->getInt("max_char_mode"));
+					// Define the character details
+					character.slot = result->getInt("slot");
+					character.character_id = result->getInt("char_id");
+					character.level = result->getInt("level");
+					character.race = result->getInt("race");
+					character.game_mode = result->getInt("mode");
+					character.face = result->getInt("face");
+					character.hair = result->getInt("hair");
+					character.height = result->getInt("height");
+					character.profession = result->getInt("class");
+					character.gender = result->getInt("sex");
+					character.map = result->getInt("map");
+					character.strength = result->getInt("strength");
+					character.dexterity = result->getInt("dexterity");
+					character.resistance = result->getInt("resistance");
+					character.intelligence = result->getInt("intelligence");
+					character.wisdom = result->getInt("wisdom");
+					character.luck = result->getInt("luck");
 
-					// Write the privilege level
-					bldr->write_byte((unsigned char) result->getInt("privilege_level"));
+					// The name of the character
+					std::string character_name = result->getString("char_name");
+
+					// Copy the name
+					std::copy(character_name.begin(), character_name.begin() + (character_name.length() + 1), character.name);
+
+					// The request byte array
+					unsigned char char_array[sizeof(character)];
+
+					// Populate the byte array
+					std::memcpy(char_array, &character, sizeof(character));
+
+					// Write the character data
+					bldr->write_bytes(char_array, sizeof(character));
 				}
 
 			} catch (sql::SQLException &e) {

@@ -24,6 +24,7 @@
 #include <genesis/common/networking/packets/PacketBuilder.h>
 #include <genesis/common/packets/Opcodes.h>
 
+#include <iostream>
 // Use the task implementation namespace
 using namespace Genesis::Game::World::Pulse::Task::Impl;
 
