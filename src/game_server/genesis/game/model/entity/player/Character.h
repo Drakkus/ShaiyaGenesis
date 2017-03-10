@@ -54,7 +54,67 @@ namespace Genesis::Game::Model::Entity::Player {
 			void write(Genesis::Common::Networking::Packets::Packet* packet);
 
 			// Checks if this character instance is initialised and ready
-			bool is_initialised();
+			bool is_initialised() const;
+
+			// Setters and getters for the character's profession
+			void set_profession(unsigned char profession);
+			unsigned char get_profession() const;
+
+			// Setters and getters for the character's race
+			void set_race(unsigned char race);
+			unsigned char get_race() const;
+
+			// Setters and getters for the character's game mode
+			void set_mode(unsigned char mode);
+			unsigned char get_mode() const;
+
+			// Setters and getters for the character's hair
+			void set_hair(unsigned char hair);
+			unsigned char get_hair() const;
+
+			// Setters and getters for the character's face
+			void set_face(unsigned char face);
+			unsigned char get_face() const;
+
+			// Setters and getters for the character's height
+			void set_height(unsigned char height);
+			unsigned char get_height() const;
+
+			// Setters and getters for the character's gender
+			void set_gender(unsigned char gender);
+			unsigned char get_gender() const;
+
+			// Setters and getters for the character's stat points
+			void set_stat_points(unsigned short stat_points);
+			unsigned short get_stat_points() const;
+
+			// Setters and getters for the character's skill points
+			void set_skill_points(unsigned short skill_points);
+			unsigned short get_skill_points() const;
+
+			// Setters and getters for the character's gold
+			void set_gold(unsigned int gold);
+			unsigned int get_gold() const;
+
+			// Setters and getters for the character's kill count
+			void set_kills(unsigned int kills);
+			unsigned int get_kills() const;
+
+			// Setters and getters for the character's death count
+			void set_deaths(unsigned int deaths);
+			unsigned int get_deaths() const;
+
+			// Setters and getters for the character's victories
+			void set_victories(unsigned int victories);
+			unsigned int get_victories() const;
+
+			// Setters and getters for the character's defeats
+			void set_defeats(unsigned int defeats);
+			unsigned int get_defeats() const;
+
+			// Setters and getters for the character's guild id
+			void set_guild_id(unsigned int guild_id);
+			unsigned int get_guild_id() const;
 
 		private:
 
@@ -63,6 +123,33 @@ namespace Genesis::Game::Model::Entity::Player {
 
 			// If the character instance is ready to enter the game world
 			bool initialised = false;
+
+			// The class, race and mode
+			unsigned char profession;
+			unsigned char race;
+			unsigned char mode;
+
+			// The appearance info of the character
+			unsigned char hair;
+			unsigned char face;
+			unsigned char height;
+			unsigned char gender;
+
+			// The stat and skill points of the character
+			unsigned short stat_points;
+			unsigned short skill_points;
+
+			// The character's gold
+			unsigned int gold;
+
+			// The kills, deaths, victories and defeats
+			unsigned int kills;
+			unsigned int deaths;
+			unsigned int victories;
+			unsigned int defeats;
+
+			// The guild id
+			unsigned int guild_id;
 	};
 }
 #endif

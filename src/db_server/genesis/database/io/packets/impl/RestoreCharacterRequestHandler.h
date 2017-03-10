@@ -19,22 +19,24 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#ifndef GENESIS_DATABASE_IO_PACKETS_IMPL_CHECKAVAILABLENAMEREQUESTHANDLER_H
-#define GENESIS_DATABASE_IO_PACKETS_IMPL_CHECKAVAILABLENAMEREQUESTHANDLER_H
+#ifndef GENESIS_DATABASE_IO_PACKETS_IMPL_RESTORECHARACTERREQUESTHANDLER_H
+#define GENESIS_DATABASE_IO_PACKETS_IMPL_RESTORECHARACTERREQUESTHANDLER_H
 
 #include <genesis/database/io/packets/PacketHandler.h>
 #include <genesis/database/DatabaseServer.h>
 
 #include <genesis/common/database/structs/game/GameHandshakeRequest.h>
+#include <genesis/common/database/structs/game/GameCharacter.h>
+
 #include <genesis/common/networking/packets/PacketBuilder.h>
 
 #include <iostream>
 
 namespace Genesis::Database::Io::Packets::Impl {
-	class CheckAvailableNameRequestHandler : public PacketHandler {
+	class RestoreCharacterRequestHandler : public PacketHandler {
 
 		/**
-		 * Handles the checking of an available character name
+		 * Handles the deleting of a character
 		 *
 		 * @param session
 		 *		The session instance
@@ -51,70 +53,54 @@ namespace Genesis::Database::Io::Packets::Impl {
 		bool handle(Genesis::Common::Networking::Server::Session::ServerSession* session, 
 				unsigned int length, unsigned short opcode, unsigned int request_id, unsigned char* data) override {
 
-			// The name array
-			char name_array[length + 1];
+			// The packet builder instance
+			auto bldr = new Genesis::Common::Networking::Packets::PacketBuilder(opcode);
 
-			// Copy the name
-			std::memcpy(&name_array, data, length);
-
-			// Null terminate the name
-			name_array[sizeof(name_array) - 1] = '\0';
-			
-			// The name to check
-			std::string name(name_array);
+			// Write the request id
+			bldr->write_int(request_id);
 
 			// The MySQL connection
-			auto connection = Genesis::Database::DatabaseServer::get_instance()->get_connector()->get_connection();
-
-			// The statement and result instances
-			auto statement = connection->createStatement();
+			std::auto_ptr<sql::Connection> connection(Genesis::Database::DatabaseServer::get_instance()->get_connector()->get_connection());
 			
 			// The prepared statement
-			std::auto_ptr<sql::PreparedStatement> prepared;
+			std::auto_ptr<sql::PreparedStatement> prepared(connection->prepareStatement("UPDATE genesis_gamedata.characters SET remain_deletion_time = NULL where char_id = ? and user_id = ? and server_id = ?"));
+			
+			// Attempt to catch any errors
+			try {
 
-			// The result set
-			std::auto_ptr<sql::ResultSet> result;
+				// The user id and server id
+				unsigned int user_id;
+				unsigned int character_id;
+				unsigned char server_id;
 
-			// Reset the prepared statement
-			prepared.reset(connection->prepareStatement("CALL genesis_gamedata.check_available_name(?, @result)"));
-
-			// Define the username, password, and ip address
-			prepared->setString(1, sql::SQLString(name));
-
-			// Execute the prepared statement
-			prepared->execute();
-
-			// Retrieve the results
-			result.reset(statement->executeQuery("SELECT @result as $result"));
-
-			// Loop through the results
-			if (result->next()) {
+				// Populate the values
+				std::memcpy(&user_id, data, sizeof(user_id));
+				std::memcpy(&character_id, data + sizeof(user_id), sizeof(character_id));
+				std::memcpy(&server_id, (data + sizeof(user_id) + sizeof(character_id)), sizeof(server_id));
 				
-				// The auth response stucture
-				Genesis::Common::Database::Structs::Auth::AuthResponse auth_response;
+				// Define the user id and server id
+				prepared->setInt(1, character_id);
+				prepared->setInt(2, user_id);
+				prepared->setInt(3, server_id);
 
-				// The packet builder instance
-				auto bldr = new Genesis::Common::Networking::Packets::PacketBuilder(opcode);
+				// The result
+				bldr->write_byte(prepared->executeUpdate() != 0 ? 0 : 1);
 
-				// Write the request id
-				bldr->write_int(request_id);
+			} catch (sql::SQLException &e) {
 
-				// Write the result
-				bldr->write_byte((unsigned char) result->getInt("$result"));
-
-				// Write the packet
-				session->write(bldr->to_packet());
-
-				// Delete the packet builder
-				delete bldr;
+				// Log the error
+				genesis_logger->error(e.what());
 			}
 
-			// Delete the statement
-			delete statement;
+			// Close the prepared statement
+			prepared->close();
 
-			// Delete the connection
-			delete connection;
+			// Write the packet
+			session->write(bldr->to_packet());
 
+			// Delete the packet builder instance
+			delete bldr;
+			
 			// Return true
 			return true;
 		}

@@ -24,13 +24,16 @@
 // Use the entity namespace
 using namespace Genesis::Game::Model::Entity;
 
+unsigned short Attributes::get_level() {
+	return this->level;
+}
 /**
  * Gets the strength of the entity
  *
  * @returns
  *		The strength value
  */
-unsigned short Attributes::get_strength() {
+unsigned int Attributes::get_strength() {
 	return this->strength;
 }
 
@@ -40,7 +43,7 @@ unsigned short Attributes::get_strength() {
  * @returns
  *		The dexterity value
  */
-unsigned short Attributes::get_dexterity() {
+unsigned int Attributes::get_dexterity() {
 	return this->dexterity;
 }
 
@@ -50,7 +53,7 @@ unsigned short Attributes::get_dexterity() {
  * @returns
  *		The resistance value
  */
-unsigned short Attributes::get_resistance() {
+unsigned int Attributes::get_resistance() {
 	return this->resistance;
 }
 
@@ -60,7 +63,7 @@ unsigned short Attributes::get_resistance() {
  * @returns
  *		The intelligence value
  */
-unsigned short Attributes::get_intelligence() {
+unsigned int Attributes::get_intelligence() {
 	return this->intelligence;
 }
 
@@ -70,11 +73,11 @@ unsigned short Attributes::get_intelligence() {
  * @returns
  *		The wisdom value
  */
-unsigned short Attributes::get_wisdom() {
+unsigned int Attributes::get_wisdom() {
 	return this->wisdom;
 }
 
-unsigned short Attributes::get_luck() {
+unsigned int Attributes::get_luck() {
 	return this->luck;
 }
 
@@ -94,28 +97,32 @@ unsigned int Attributes::get_current_experience() {
 	return this->current_experience;
 }
 
+void Attributes::set_level(unsigned short level) {
+	this->level = level;
+}
+
 // Sets the entity's stats
-void Attributes::set_strength(unsigned short strength) {
+void Attributes::set_strength(unsigned int strength) {
 	this->strength = strength;
 }
 
-void Attributes::set_dexterity(unsigned short dexterity) {
+void Attributes::set_dexterity(unsigned int dexterity) {
 	this->dexterity = dexterity;
 }
 
-void Attributes::set_resistance(unsigned short resistance) {
+void Attributes::set_resistance(unsigned int resistance) {
 	this->resistance = resistance;
 }
 
-void Attributes::set_intelligence(unsigned short intelligence) {
+void Attributes::set_intelligence(unsigned int intelligence) {
 	this->intelligence = intelligence;
 }
 
-void Attributes::set_wisdom(unsigned short wisdom) {
+void Attributes::set_wisdom(unsigned int wisdom) {
 	this->wisdom = wisdom;
 }
 
-void Attributes::set_luck(unsigned short luck) {
+void Attributes::set_luck(unsigned int luck) {
 	this->luck = luck;
 }
 

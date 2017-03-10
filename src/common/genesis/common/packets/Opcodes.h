@@ -66,6 +66,9 @@ namespace Genesis::Common::Packets::Opcodes {
 	/* Contains information about a character creation request from the current game account */
 	const unsigned short CREATE_CHARACTER = 0x0102;
 
+	/* Contains information about a character deletion request from the current game account */
+	const unsigned short DELETE_CHARACTER = 0x0103;
+
 	/* Contains specific details about the game character, such as the max HP, Gold, Stat/Skill Points,
 	Kills/Deaths, and guild name */
 	const unsigned short CHARACTER_DETAILS = 0x0105;
@@ -76,6 +79,9 @@ namespace Genesis::Common::Packets::Opcodes {
 
 	/* Contains the current faction of the game account (either Light, Fury, or undecided) */
 	const unsigned short ACCOUNT_FACTION = 0x0109;
+
+	/* Contains the request to restore a deleted character */
+	const unsigned short RESTORE_CHARACTER = 0x010F;
 
 	/* Checks if a given character name is available */
 	const unsigned short AVAILABLE_CHARACTER_NAME = 0x0119;

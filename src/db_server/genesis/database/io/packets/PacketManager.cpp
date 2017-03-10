@@ -45,6 +45,10 @@ Genesis::Database::Io::Packets::PacketManager::PacketManager() {
 	this->handlers[Opcodes::CHECK_AVAILABLE_NAME] = new Genesis::Database::Io::Packets::Impl::CheckAvailableNameRequestHandler();
 	this->handlers[Opcodes::CREATE_CHARACTER] = new Genesis::Database::Io::Packets::Impl::CreateCharacterRequestHandler();
 	this->handlers[Opcodes::GET_CHARACTER_LIST_DATA] = new Genesis::Database::Io::Packets::Impl::CharacterScreenDataRequestHandler();
+	this->handlers[Opcodes::SELECT_FACTION] = new Genesis::Database::Io::Packets::Impl::SelectFactionRequestHandler();
+	this->handlers[Opcodes::DELETE_CHARACTER] = new Genesis::Database::Io::Packets::Impl::DeleteCharacterRequestHandler();
+	this->handlers[Opcodes::RESTORE_CHARACTER] = new Genesis::Database::Io::Packets::Impl::RestoreCharacterRequestHandler();
+	this->handlers[Opcodes::LOAD_GAME_CHARACTER] = new Genesis::Database::Io::Packets::Impl::LoadGameCharacterDataRequestHandler();
 }
 
 /**

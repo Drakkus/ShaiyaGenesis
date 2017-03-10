@@ -56,6 +56,61 @@ namespace Genesis::Common::Networking::Client {
 			 * @param packet
 			 *		The packet instance to write
 			 */
+			void write(Genesis::Common::Networking::Packets::Packet* packet) {
+
+				// The length of the packet
+				unsigned int length = packet->length + 4;
+
+				// The array to write to
+				unsigned char* data = new unsigned char[length];
+
+				// The request id
+				unsigned int request_id = (unsigned int) rand();
+
+				// Write the length
+				data[0] = (length);
+				data[1] = (length >> 8);
+
+				// Write the opcode
+				data[2] = (packet->opcode);
+				data[3] = (packet->opcode >> 8);
+
+				// Write the request id
+				data[4] = (request_id);
+				data[5] = (request_id >> 8);
+				data[6] = (request_id >> 16);
+				data[7] = (request_id >> 24);
+
+				// Write the data
+				for (int i = 0; i < packet->payload.size(); i++) {
+					data[8 + i] = packet->payload.at(i);
+				}
+
+				// Write the data
+				boost::asio::async_write(this->socket, boost::asio::buffer(data, length),
+					[&](const boost::system::error_code& error, unsigned int bytes_written) {
+
+						// If an error occurred, close the socket if it is still open
+						if (error && this->socket.is_open()) {
+							this->socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both);
+							this->socket.close();
+						}
+				});
+	
+				// Delete the data array and packet
+				delete[] data;
+				delete packet;
+			}
+
+			/**
+			 * Writes a packet to this session's socket
+			 *
+			 * @param packet
+			 *		The packet instance to write
+			 *
+			 * @param callback
+			 *		The callback to execute
+			 */
 			void write(Genesis::Common::Networking::Packets::Packet* packet, std::function<void(unsigned char*, unsigned int)> callback) {
 
 				// The length of the packet

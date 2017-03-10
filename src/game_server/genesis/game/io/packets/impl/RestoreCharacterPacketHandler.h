@@ -19,17 +19,36 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#ifndef GENESIS_GAME_IO_PACKETS_IMPL_HANDLERS_H
-#define GENESIS_GAME_IO_PACKETS_IMPL_HANDLERS_H
+#ifndef GENESIS_GAME_IO_PACKETS_IMPL_RESTORECHARACTERPACKETHANDLER_H
+#define GENESIS_GAME_IO_PACKETS_IMPL_RESTORECHARACTERPACKETHANDLER_H
 
-// A header to include all packet handlers
-#include "DefaultPacketHandler.h"
-#include "GameHandshakePacketHandler.h"
-#include "CheckAvailableNamePacketHandler.h"
-#include "CreateCharacterPacketHandler.h"
-#include "SelectFactionPacketHandler.h"
-#include "DeleteCharacterPacketHandler.h"
-#include "RestoreCharacterPacketHandler.h"
-#include "SelectCharacterPacketHandler.h"
+#include <genesis/game/io/packets/PacketHandler.h>
+#include <genesis/game/model/entity/player/Player.h>
 
+#include <boost/shared_ptr.hpp>
+
+#include <iostream>
+#include <iomanip>
+
+namespace Genesis::Game::Io::Packets::Impl {
+	class RestoreCharacterPacketHandler : public PacketHandler {
+
+		/**
+		 * Handles an incoming request to restore a character that is pending deletion
+		 *
+		 * @param session
+		 *		The session instance
+		 *
+		 * @param length
+		 *		The length of the packet
+		 *
+		 * @param opcode
+		 *		The opcode of the incoming packet
+		 *
+		 * @param data
+		 *		The packet data
+		 */
+		bool handle(Genesis::Common::Networking::Server::Session::ServerSession* session, unsigned int length, unsigned short opcode, unsigned char* data);
+	};
+}
 #endif

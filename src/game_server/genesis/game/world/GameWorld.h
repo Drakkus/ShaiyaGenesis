@@ -70,6 +70,9 @@ namespace Genesis::Game::World {
 			// Gets the player index of an index
 			Genesis::Game::Model::Entity::Player::Player* get_player_for_index(unsigned int index);
 			
+			// Delete the player instance
+			void delete_player_for_index(unsigned int index);
+			
 		private:
 			
 			// The server id
@@ -78,6 +81,9 @@ namespace Genesis::Game::World {
 			// The map of indexes to player instance
 			std::map<unsigned int, Genesis::Game::Model::Entity::Player::Player*> players;
 			
+			// The vector of loaded character instance
+			std::vector<Genesis::Game::Model::Entity::Player::Character*> characters;
+
 			// The GenesisClient instance
 			Genesis::Common::Networking::Client::GenesisClient* db_client;
 

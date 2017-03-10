@@ -104,3 +104,21 @@ void GameWorld::load_player(Genesis::Game::Model::Entity::Player::Player* player
 Genesis::Game::Model::Entity::Player::Player* GameWorld::get_player_for_index(unsigned int index) {
 	return this->players[index];
 }
+
+/**
+ * Gets the player instance for an index
+ *
+ * @param index
+ *		The index
+ */
+void GameWorld::delete_player_for_index(unsigned int index) {
+	
+	// The player instance
+	auto player = players[index];
+
+	// Erase the player
+	players.erase(index);
+
+	// Delete the player
+	delete player;
+}

@@ -97,10 +97,13 @@ namespace Genesis::Database::Io::Packets::Impl {
 
 					// Write the privilege level
 					bldr->write_byte((unsigned char) result->getInt("privilege_level"));
+
+					// Write the player's points
+					bldr->write_int(result->getInt("points"));
 				}
 
 			} catch (sql::SQLException &e) {
-
+				
 				// Log the error
 				genesis_logger->error(e.what());
 			}

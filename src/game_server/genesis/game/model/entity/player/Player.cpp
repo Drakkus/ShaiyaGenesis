@@ -95,6 +95,16 @@ void Player::set_max_game_mode(unsigned char max_game_mode) {
 }
 
 /**
+ * Sets the amount of item-mall points
+ *
+ * @param points
+ *		The points
+ */
+void Player::set_points(unsigned int points) {
+	this->points = points;
+}
+
+/**
  * Gets the index for this player instance
  *
  * @returns

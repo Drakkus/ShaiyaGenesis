@@ -32,5 +32,9 @@
 #include "CheckAvailableNameRequestHandler.h"
 #include "CreateCharacterRequestHandler.h"
 #include "CharacterScreenDataRequestHandler.h"
+#include "SelectFactionRequestHandler.h"
+#include "DeleteCharacterRequestHandler.h"
+#include "RestoreCharacterRequestHandler.h"
+#include "LoadGameCharacterDataRequestHandler.h"
 
 #endif

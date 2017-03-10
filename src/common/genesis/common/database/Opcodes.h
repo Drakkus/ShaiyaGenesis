@@ -82,6 +82,30 @@ namespace Genesis::Common::Database::Opcodes {
 	 */
 	const unsigned short GET_CHARACTER_LIST_DATA = 9;
 
+	/**
+	 * Handles the selection of a faction for the player
+	 */
+	const unsigned short SELECT_FACTION = 10;
+
+	/**
+	 * Handles the request to delete a character
+	 */
+	const unsigned short DELETE_CHARACTER = 11;
+
+	/**
+	 * Handles the request to restore a character that is pending deletion
+	 */
+	const unsigned short RESTORE_CHARACTER = 12;
+
+	/**
+	 * Handles the loading of a game character's data
+	 */
+	const unsigned short LOAD_GAME_CHARACTER = 13;
+
+	/**
+	 * Handles the loading of a game character's skills
+	 */
+	const unsigned short LOAD_GAME_CHARACTER_SKILLS = 14;
 }
 
 #endif

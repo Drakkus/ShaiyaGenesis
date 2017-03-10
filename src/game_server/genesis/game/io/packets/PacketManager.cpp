@@ -40,6 +40,10 @@ Genesis::Game::Io::Packets::PacketManager::PacketManager() {
 	this->handlers[Opcodes::GAME_HANDSHAKE] = new Genesis::Game::Io::Packets::Impl::GameHandshakePacketHandler();
 	this->handlers[Opcodes::AVAILABLE_CHARACTER_NAME] = new Genesis::Game::Io::Packets::Impl::CheckAvailableNamePacketHandler();
 	this->handlers[Opcodes::CREATE_CHARACTER] = new Genesis::Game::Io::Packets::Impl::CreateCharacterPacketHandler();
+	this->handlers[Opcodes::ACCOUNT_FACTION] = new Genesis::Game::Io::Packets::Impl::SelectFactionPacketHandler();
+	this->handlers[Opcodes::DELETE_CHARACTER] = new Genesis::Game::Io::Packets::Impl::DeleteCharacterPacketHandler();
+	this->handlers[Opcodes::RESTORE_CHARACTER] = new Genesis::Game::Io::Packets::Impl::RestoreCharacterPacketHandler();
+	this->handlers[Opcodes::CHARACTER_SELECTION] = new Genesis::Game::Io::Packets::Impl::SelectCharacterPacketHandler();
 }
 
 /**

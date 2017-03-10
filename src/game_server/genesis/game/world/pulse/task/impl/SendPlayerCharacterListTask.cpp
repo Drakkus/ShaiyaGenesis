@@ -105,6 +105,7 @@ void SendPlayerCharacterListTask::execute() {
 
 			// The height of the character
 			bldr->write_byte(character.height);
+
 			// The class of the character
 			bldr->write_byte(character.profession);
 
@@ -138,6 +139,9 @@ void SendPlayerCharacterListTask::execute() {
 
 			// Write the character name
 			bldr->write_bytes((unsigned char*) character.name, sizeof(character.name));
+
+			// Write the character deletion flag
+			bldr->write_byte(character.is_pending_deletion);
 
 			// Write the character data
 			local_player->write(bldr->to_packet());

@@ -40,6 +40,9 @@ namespace Genesis::Common::Database::Structs::Game {
 		
 		// The privilege level
 		unsigned char privilege_level;
+
+		// The points
+		unsigned int points;
 	};
 
 }

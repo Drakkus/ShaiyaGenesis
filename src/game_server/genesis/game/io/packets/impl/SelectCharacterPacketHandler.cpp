@@ -19,13 +19,22 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#include "ConnectionTerminatedPacketHandler.h"
+#include "SelectCharacterPacketHandler.h"
+
+#include <genesis/common/networking/packets/PacketBuilder.h>
+#include <genesis/common/packets/Opcodes.h>
+#include <genesis/common/database/Opcodes.h>
+
+#include <genesis/game/world/GameWorld.h>
+#include <genesis/game/world/pulse/task/impl/LoadCharacterGameWorldTask.h>
+
+#include <string>
 
 // The packet handler implementation namespace
-using namespace Genesis::Auth::Io::Packets::Impl;
+using namespace Genesis::Game::Io::Packets::Impl;
 
 /**
- * Handles a terminated connection packet
+ * Handles an incoming request to enter the game world with a character
  *
  * @param session
  *		The session instance
@@ -39,33 +48,28 @@ using namespace Genesis::Auth::Io::Packets::Impl;
  * @param data
  *		The packet data
  */
-bool ConnectionTerminatedPacketHandler::handle(Genesis::Common::Networking::Server::Session::ServerSession* session, 
+bool SelectCharacterPacketHandler::handle(Genesis::Common::Networking::Server::Session::ServerSession* session, 
 				unsigned int length, unsigned short opcode, unsigned char* data) {
 
-	// The identity keys for this session
-	auto identity_keys = session->get_identity_keys();
+	// If the length is not valid
+	if (length != 4)
+		return true;
+
+	// The character id
+	unsigned int character_id;
+
+	// Copy the character id
+	std::memcpy(&character_id, data, sizeof(character_id));
 
 	// The client instance
-	auto db_client = AuthServer::get_instance()->get_db_client();
+	auto db_client = Genesis::Game::World::GameWorld::get_instance()->get_db_client();
 
-	// The packet builder instance
-	auto bldr = new Genesis::Common::Networking::Packets::PacketBuilder(Genesis::Common::Database::Opcodes::DELETE_SESSION);
-			
-	// Write the identity keys to delete
-	bldr->write_bytes(identity_keys, 16);
+	// The player instance
+	auto player = Genesis::Game::World::GameWorld::get_instance()->get_player_for_index(session->get_game_index());
+
+	// Push the task to the worker
+	Genesis::Game::World::GameWorld::get_instance()->push_task(new Genesis::Game::World::Pulse::Task::Impl::LoadCharacterGameWorldTask(player, character_id));
 	
-	// Write the packet
-	db_client->write(bldr->to_packet());
-
-	// The null identity keys
-	unsigned char empty_keys[16];
-
-	// Set the null identity keys
-	session->set_identity_keys(empty_keys);
-
-	// Delete the session
-	delete session;
-	
-	// Return false
-	return false;
+	// Return true
+	return true;
 }

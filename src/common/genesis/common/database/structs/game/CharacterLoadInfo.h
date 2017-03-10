@@ -19,8 +19,8 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#ifndef GENESIS_COMMON_DATABASE_DATABASE_STRUCTS_GAME_GAMECHARACTER_H
-#define GENESIS_COMMON_DATABASE_DATABASE_STRUCTS_GAME_GAMECHARACTER_H
+#ifndef GENESIS_COMMON_DATABASE_DATABASE_STRUCTS_GAME_CHARACTERLOADINFO_H
+#define GENESIS_COMMON_DATABASE_DATABASE_STRUCTS_GAME_CHARACTERLOADINFO_H
 
 /**
  * This namespace will contain all the database structures, used by the servers.
@@ -29,61 +29,68 @@
  */
 namespace Genesis::Common::Database::Structs::Game {
 
-	// Represents a character
-	struct GameCharacter {
+	// The character's info information
+	struct CharacterLoadInfo {
 
-		// The slot
-		unsigned char slot;
-		
+		// The character name
+		char name[32];
+
 		// The character id
 		unsigned int character_id;
-		
-		// THe level of the character
+
+		// The class, race and mode
+		unsigned char profession;
+		unsigned char race;
+		unsigned char mode;
+
+		// The level of the character
 		unsigned short level;
 
-		// The race of the character
-		unsigned char race;
-
-		// The mode of the character
-		unsigned char game_mode;
-
-		// The hair of the character
+		// The appearance info of the character
 		unsigned char hair;
-
-		// The face of the character
 		unsigned char face;
-
-		// The height of the character
 		unsigned char height;
-
-		// The class of the character
-		unsigned char profession;
-
-		// The gender of the character
 		unsigned char gender;
 
-		// The map id
-		unsigned short map;
+		// The base stats
+		unsigned int strength;
+		unsigned int dexterity;
+		unsigned int resistance;
+		unsigned int intelligence;
+		unsigned int wisdom;
+		unsigned int luck;
 
-		// The stats
-		unsigned short strength;
-		unsigned short dexterity;
-		unsigned short resistance;
-		unsigned short intelligence;
-		unsigned short wisdom;
-		unsigned short luck;
+		// The current HP/MP/SP
+		unsigned int current_hp;
+		unsigned int current_mp;
+		unsigned int current_sp;
 
-		// The item types
-		unsigned char item_types[17] = {0};
+		// The stat points
+		unsigned short stat_points;
 
-		// The item type ids
-		unsigned char item_type_ids[17] = {0};
+		// The skill points
+		unsigned short skill_points;
 
-		// The name of the character
-		unsigned char name[19] = {'\0'};
+		// The character's gold
+		unsigned int gold;
 
-		// If the character is pending deletion
-		unsigned char is_pending_deletion = 0;
+		// The kills, deaths, victories and defeats
+		unsigned int kills;
+		unsigned int deaths;
+		unsigned int victories;
+		unsigned int defeats;
+
+		// The guild id
+		unsigned int guild_id;
+
+		// The current map id
+		unsigned short map_id;
+
+		// The coordinates
+		unsigned char direction;
+		float position_x;
+		float position_y;
+		float position_height;
 	};
 
 }

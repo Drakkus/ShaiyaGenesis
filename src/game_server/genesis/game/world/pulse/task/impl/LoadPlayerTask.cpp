@@ -65,7 +65,8 @@ void Genesis::Game::World::Pulse::Task::Impl::LoadPlayerTask::execute() {
 		local_player->set_faction(response.faction);
 		local_player->set_max_game_mode(response.max_char_mode);
 		local_player->set_privilege_level(response.privilege_level);
-
+		local_player->set_points(response.points);
+		
 		// Write the player's character list
 		Genesis::Game::World::GameWorld::get_instance()->push_task(new Genesis::Game::World::Pulse::Task::Impl::SendPlayerCharacterListTask(local_player));
 

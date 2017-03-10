@@ -31,24 +31,26 @@ namespace Genesis::Game::Model::Entity {
 		public:
 
 			// Gets the entity's stats
-			unsigned short get_strength();
-			unsigned short get_dexterity();
-			unsigned short get_resistance();
-			unsigned short get_intelligence();
-			unsigned short get_wisdom();
-			unsigned short get_luck();
+			unsigned short get_level();
+			unsigned int get_strength();
+			unsigned int get_dexterity();
+			unsigned int get_resistance();
+			unsigned int get_intelligence();
+			unsigned int get_wisdom();
+			unsigned int get_luck();
 			unsigned int get_current_hp();
 			unsigned int get_current_mp();
 			unsigned int get_current_sp();
 			unsigned int get_current_experience();
 
 			// Sets the entity's stats
-			void set_strength(unsigned short strength);
-			void set_dexterity(unsigned short dexterity);
-			void set_resistance(unsigned short resistance);
-			void set_intelligence(unsigned short intelligence);
-			void set_wisdom(unsigned short wisdom);
-			void set_luck(unsigned short luck);
+			void set_level(unsigned short level);
+			void set_strength(unsigned int strength);
+			void set_dexterity(unsigned int dexterity);
+			void set_resistance(unsigned int resistance);
+			void set_intelligence(unsigned int intelligence);
+			void set_wisdom(unsigned int wisdom);
+			void set_luck(unsigned int luck);
 			void set_current_hitpoints(unsigned int current_hitpoints);
 			void set_current_mana(unsigned int current_mana);
 			void set_current_stamina(unsigned int current_stamina);
@@ -56,23 +58,26 @@ namespace Genesis::Game::Model::Entity {
 
 		private:
 
+			// The level of the entity
+			unsigned short level;
+
 			// The strength of the entity
-			unsigned short strength;
+			unsigned int strength;
 
 			// The dexterity of the entity
-			unsigned short dexterity;
+			unsigned int dexterity;
 
 			// The physical resistance of the entity
-			unsigned short resistance;
+			unsigned int resistance;
 
 			// The intelligence of the entity
-			unsigned short intelligence;
+			unsigned int intelligence;
 
 			// The wisdom of the entity
-			unsigned short wisdom;
+			unsigned int wisdom;
 
 			// The luck of the entity
-			unsigned short luck;
+			unsigned int luck;
 
 			// The current hitpoints of the entity
 			unsigned int current_hitpoints;

@@ -23,6 +23,7 @@
 #define GENESIS_GAME_MODEL_ENTITY_ENTITY_H
 
 #include <genesis/game/model/entity/Attributes.h>
+#include <genesis/game/model/entity/Position.h>
 
 #include <string>
 
@@ -57,6 +58,9 @@ namespace Genesis::Game::Model::Entity {
 			// Gets the attributes instance for this entity
 			Genesis::Game::Model::Entity::Attributes* get_attributes();
 			
+			// Gets the position instance for this entity
+			Genesis::Game::Model::Entity::Position* get_position();
+
 			// Gets the name of the entity
 			std::string& get_name();
 
@@ -73,6 +77,9 @@ namespace Genesis::Game::Model::Entity {
 
 			// The attributes of the entity
 			Genesis::Game::Model::Entity::Attributes* attributes = new Genesis::Game::Model::Entity::Attributes();
+
+			// The position of the entity
+			Genesis::Game::Model::Entity::Position* position = new Genesis::Game::Model::Entity::Position();
 			
 	};
 }

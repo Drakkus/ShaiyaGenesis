@@ -1,0 +1,1 @@
+rm -rf build && cmake -DAUTH_SERVER=0 -B"./build/" -H"." && cd build && make

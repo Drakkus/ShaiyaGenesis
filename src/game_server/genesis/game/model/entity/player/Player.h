@@ -74,6 +74,9 @@ namespace Genesis::Game::Model::Entity::Player {
 			// Set the player's character instance
 			void set_character(Genesis::Game::Model::Entity::Player::Character* character);
 
+			// Set the player's points
+			void set_points(unsigned int points);
+			
 			// Gets the player index
 			unsigned int get_index();
 			
@@ -93,6 +96,9 @@ namespace Genesis::Game::Model::Entity::Player {
 
 			// The privilege level of this player
 			unsigned char privilege_level;
+
+			// The AP that the player has
+			unsigned int points;
 
 			// The maximum selectable game mode
 			unsigned char max_game_mode;

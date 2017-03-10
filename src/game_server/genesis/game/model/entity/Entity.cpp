@@ -31,6 +31,9 @@ void Entity::destroy() {
 
 	// Delete the attributes instance
 	delete this->attributes;
+
+	// Delete the position instance
+	delete this->position;
 }
 
 // Gets the name of the entity
@@ -61,4 +64,8 @@ unsigned int Entity::get_index() {
  */
 Genesis::Game::Model::Entity::Attributes* Entity::get_attributes() {
 	return this->attributes;
+}
+
+Genesis::Game::Model::Entity::Position* Entity::get_position() {
+	return this->position;
 }

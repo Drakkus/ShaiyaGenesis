@@ -42,7 +42,7 @@ namespace Genesis::Common::Database::Structs::Auth {
 		unsigned char privilege_level;
 
 		// The session keys, used for identify the user
-		unsigned char identity_keys[16];
+		unsigned char identity_keys[16] = {0};
 	};
 
 

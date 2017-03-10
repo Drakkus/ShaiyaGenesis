@@ -19,21 +19,21 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#ifndef GENESIS_DATABASE_IO_PACKETS_IMPL_CHARACTERSCREENDATAREQUESTHANDLER_H
-#define GENESIS_DATABASE_IO_PACKETS_IMPL_CHARACTERSCREENDATAREQUESTHANDLER_H
+#ifndef GENESIS_DATABASE_IO_PACKETS_IMPL_LOADGAMECHARACTERDATAREQUESTHANDLER_H
+#define GENESIS_DATABASE_IO_PACKETS_IMPL_LOADGAMECHARACTERDATAREQUESTHANDLER_H
 
 #include <genesis/database/io/packets/PacketHandler.h>
 #include <genesis/database/DatabaseServer.h>
 
 #include <genesis/common/database/structs/game/GameHandshakeRequest.h>
-#include <genesis/common/database/structs/game/GameCharacter.h>
+#include <genesis/common/database/structs/game/CharacterLoadInfo.h>
 
 #include <genesis/common/networking/packets/PacketBuilder.h>
 
 #include <iostream>
 
 namespace Genesis::Database::Io::Packets::Impl {
-	class CharacterScreenDataRequestHandler : public PacketHandler {
+	class LoadGameCharacterDataRequestHandler : public PacketHandler {
 
 		/**
 		 * Handles the loading of character data
@@ -63,7 +63,7 @@ namespace Genesis::Database::Io::Packets::Impl {
 			std::auto_ptr<sql::Connection> connection(Genesis::Database::DatabaseServer::get_instance()->get_connector()->get_connection());
 			
 			// The prepared statement
-			std::auto_ptr<sql::PreparedStatement> prepared(connection->prepareStatement("CALL genesis_gamedata.load_game_characters(?, ?)"));
+			std::auto_ptr<sql::PreparedStatement> prepared(connection->prepareStatement("CALL genesis_gamedata.load_game_character(?, ?, ?)"));
 
 			// The result set
 			std::auto_ptr<sql::ResultSet> result;
@@ -73,48 +73,65 @@ namespace Genesis::Database::Io::Packets::Impl {
 
 				// The user id and server id
 				unsigned int user_id;
+				unsigned int character_id;
 				unsigned char server_id;
 
 				// Populate the values
 				std::memcpy(&user_id, data, sizeof(user_id));
-				std::memcpy(&server_id, data + sizeof(user_id), sizeof(server_id));
+				std::memcpy(&character_id, data + sizeof(user_id), sizeof(character_id));
+				std::memcpy(&server_id, data + sizeof(user_id) + sizeof(character_id), sizeof(server_id));
 				
 				// Define the user id and server id
 				prepared->setInt(1, user_id);
-				prepared->setInt(2, server_id);
+				prepared->setInt(2, character_id);
+				prepared->setInt(3, server_id);
 
 				// Execute the query
 				result.reset(prepared->executeQuery());
 
-				// The character count
-				bldr->write_byte(result->rowsCount());
-
 				// While there is a result to be read
-				while (result->next()) {
+				if (result->next()) {
 						
 					// The character instance
-					Genesis::Common::Database::Structs::Game::GameCharacter character;
+					Genesis::Common::Database::Structs::Game::CharacterLoadInfo character;
 
 					// Define the character details
-					character.slot = result->getInt("slot");
 					character.character_id = result->getInt("char_id");
-					character.level = result->getInt("level");
-					character.race = result->getInt("race");
-					character.game_mode = result->getInt("mode");
-					character.face = result->getInt("face");
-					character.hair = result->getInt("hair");
-					character.height = result->getInt("height");
 					character.profession = result->getInt("class");
+					character.race = result->getInt("race");
+					character.mode = result->getInt("mode");
+					character.level = result->getInt("level");
+					character.hair = result->getInt("hair");
+					character.face = result->getInt("face");
+					character.height = result->getInt("height");
 					character.gender = result->getInt("sex");
-					character.map = result->getInt("map");
 					character.strength = result->getInt("strength");
 					character.dexterity = result->getInt("dexterity");
 					character.resistance = result->getInt("resistance");
 					character.intelligence = result->getInt("intelligence");
 					character.wisdom = result->getInt("wisdom");
 					character.luck = result->getInt("luck");
-					character.is_pending_deletion = (result->getString("remain_deletion_time")->empty() ? 0 : 1);
+					character.current_hp = result->getInt("current_hp");
+					character.current_mp = result->getInt("current_mp");
+					character.current_sp = result->getInt("current_sp");
+					character.stat_points = result->getInt("stat_points");
+					character.skill_points = result->getInt("skill_points");
+					character.gold = result->getInt("gold");
+					character.kills = result->getInt("kill_count");
+					character.deaths = result->getInt("death_count");
+					character.victories = result->getInt("victory_count");
+					character.defeats = result->getInt("defeat_count");
 
+					// TODO: Guild ID
+					character.guild_id = 0;
+
+					// The position details
+					character.map_id = result->getInt("map");
+					character.direction = result->getInt("direction");
+					character.position_x = (float) result->getDouble("position_x");
+					character.position_y = (float) result->getDouble("position_y");
+					character.position_height = result->getDouble("position_height");
+					
 					// The name of the character
 					std::string character_name = result->getString("char_name");
 
@@ -127,11 +144,17 @@ namespace Genesis::Database::Io::Packets::Impl {
 					// Populate the byte array
 					std::memcpy(char_array, &character, sizeof(character));
 
+					// Write a successful load response
+					bldr->write_byte(0);
+
 					// Write the character data
 					bldr->write_bytes(char_array, sizeof(character));
 				}
 
 			} catch (sql::SQLException &e) {
+
+				// Write a failed load response
+				bldr->write_byte(1);
 
 				// Log the error
 				genesis_logger->error(e.what());
