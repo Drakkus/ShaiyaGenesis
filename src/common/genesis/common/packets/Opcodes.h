@@ -69,6 +69,9 @@ namespace Genesis::Common::Packets::Opcodes {
 	/* Contains information about a character deletion request from the current game account */
 	const unsigned short DELETE_CHARACTER = 0x0103;
 
+	/* Represents a request to enter the game world with a specific character */
+	const unsigned short CHARACTER_SELECTION = 0x0104;
+
 	/* Contains specific details about the game character, such as the max HP, Gold, Stat/Skill Points,
 	Kills/Deaths, and guild name */
 	const unsigned short CHARACTER_DETAILS = 0x0105;
@@ -80,27 +83,45 @@ namespace Genesis::Common::Packets::Opcodes {
 	/* Contains the current faction of the game account (either Light, Fury, or undecided) */
 	const unsigned short ACCOUNT_FACTION = 0x0109;
 
+	/* Contains the character's active buffs and debuffs */
+	const unsigned short CHARACTER_ACTIVE_BUFFS = 0x010A;
+
+	/* Contains the character's skill bar arrangements */
+	const unsigned short CHARACTER_SKILL_BARS = 0x010B;
+
 	/* Contains the request to restore a deleted character */
 	const unsigned short RESTORE_CHARACTER = 0x010F;
 
 	/* Checks if a given character name is available */
 	const unsigned short AVAILABLE_CHARACTER_NAME = 0x0119;
 
-	/* Represents a request to enter the game world with a specific character */
-	const unsigned short CHARACTER_SELECTION = 0x0120;
-
-	/* Contains the values of the character's current HP/MP/SP */
-	const unsigned short CURRENT_CHARACTER_HITPOINTS = 0x0125;
+	/* Contains the amount of bless in the game world */
+	const unsigned short BLESS_AMOUNT = 0x0211;
 
 	/* Contains the amount of "Aeria Points" the account possesses */
-	const unsigned short ACCOUNT_AERIA_POINTS = 0x0126;
+	const unsigned short ACCOUNT_AERIA_POINTS = 0x2601;
 
 	/* */
 	const unsigned short CHANGE_APPEARANCE = 0x0507;
 
+	/* Contains the attack and movement speed values for a character */
+	const unsigned short CHARACTER_ATTACK_MOVEMENT_SPEED = 0x051C;
+
+	/* Contains the values of the character's current HP/MP/SP */
+	const unsigned short CURRENT_CHARACTER_HITPOINTS = 0x0521;
+	
 	/* Contains variable character stats, such as the total yellow stats provided by gear,
 	the minimum/maximum attack powers, the defense, and the resistance values */
 	const unsigned short ADDITIONAL_CHARACTER_STATS = 0x0526;
+
+	/* Contains the list of quests for the character */
+	const unsigned short QUEST_LIST = 0x0901;
+
+	/* Contains the list of guilds for the character */
+	const unsigned short GUILD_LIST = 0x2F0D;
+
+	/* Sent from the server to the client, containing a notice to be sent to the player */
+	const unsigned short NOTICE = 0xF90B;
 }
 
 #endif

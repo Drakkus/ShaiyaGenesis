@@ -25,6 +25,7 @@
 #include <string>
 #include <mutex>
 #include <boost/property_tree/ptree.hpp>
+#include <iostream>
 
 /**
  * A utility class used for parsing a configuration file, and then retrieving the various values.
@@ -51,23 +52,25 @@ namespace Genesis::Common::Configuration {
 				try {
 
 					// The value
-					T value = this->config.get<T>(boost::property_tree::ptree::path_type(name, '/'));
+					T value = (T) this->config.get<T>(boost::property_tree::ptree::path_type(name, '/'));
 					
 					// If the value is a string
 					if (std::is_same<T, std::string>::value) {
 						
 						// The string value
 						std::string* str_val = (std::string*) &value;
-
+						
 						// Erase all quotes in the string
 						str_val->erase(std::remove(str_val->begin(), str_val->end(), '"'), str_val->end());
 					}
-
+				
 					// Return the value
 					return value;
 
-				} catch (boost::property_tree::ptree_bad_path) {
-				} catch (boost::property_tree::ptree_bad_data) {	
+				} catch (boost::property_tree::ptree_bad_path &e) {
+					std::cout << e.what() << std::endl;
+				} catch (boost::property_tree::ptree_bad_data &e) {
+					std::cout << e.what() << std::endl;
 				}
 
 				// If any errors occurred, return the default value

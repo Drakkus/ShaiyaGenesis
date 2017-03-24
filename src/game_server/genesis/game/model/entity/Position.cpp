@@ -24,63 +24,142 @@
 // Use the entity namespace
 using namespace Genesis::Game::Model::Entity;
 
-void Position::set(unsigned short map, float x, float y, float height, unsigned char direction) {
+/**
+ * Sets the values of the current position, to another position
+ *
+ * @param position
+ *		The position
+ */
+void Position::set(Position* position) {
+	this->set(position->get_map(), position->get_x(), position->get_y(), position->get_height(), position->get_direction());
+}
+
+/**
+ * Sets the values of the current position
+ *
+ * @param map
+ *		The map id
+ *
+ * @param x
+ *		The x coordinate
+ *
+ * @param y
+ *		The y coordinate
+ *
+ * @param height
+ *		The height (z) coordinate
+ * 
+ * @param direction
+ *		The direction to face
+ */
+void Position::set(unsigned short map, float x, float y, float height, unsigned short direction) {
 	this->set_map(map);
 	this->set_x_y_height(x, y, height);
 	this->set_direction(direction);
 }
 
-			void Position::set_map(unsigned short map) {
-				this->map = map;
-			}
+/**
+ * Sets the map value of the current position
+ *
+ * @param map
+ *		The map
+ */
+void Position::set_map(unsigned short map) {
+	this->map = map;
+}
 
-			void Position::set_x(float x) {
-				this->x = x;
-			}
+/**
+ * Sets the x coordinate value
+ *
+ * @param x
+ *		The x coordinate
+ */
+void Position::set_x(float x) {
+	this->x = x;
+}
 
-			void Position::set_y(float y) {
-				this->y = y;
-			}
+/**
+ * Sets the y coordinate value
+ *
+ * @param y
+ *		The y coordinate
+ */
+void Position::set_y(float y) {
+	this->y = y;
+}
 
-			void Position::set_height(float height) {
-				this->height = height;
-			}
+/**
+ * Sets the height coordinate value
+ *
+ * @param height
+ *		The height coordinate
+ */
+void Position::set_height(float height) {
+	this->height = height;
+}
 
-			void Position::set_direction(unsigned char direction) {
-				this->direction = direction;
-			}
+/**
+ * Sets the direction value
+ *
+ * @param direction
+ *		The direction value
+ */
+void Position::set_direction(unsigned short direction) {
+	this->direction = direction;
+}
 
-			void Position::set_x_y(float x, float y) {
-				this->set_x(x);
-				this->set_y(y);
-			}
+/**
+ * A helper method to set both the x and y coordinates
+ *
+ * @param x
+ *		The x coordinate
+ *
+ * @param y
+ *		The y coordinate
+ */
+void Position::set_x_y(float x, float y) {
+	this->set_x(x);
+	this->set_y(y);
+}
 
-			void Position::set_x_y_height(float x, float y, float height) {
-				this->set_x_y(x, y);
-				this->set_height(height);
-			}
+/**
+ * A helper method to set the x, y, and height coordinates
+ *
+ * @param x
+ *		The x coordinate
+ *
+ * @param y
+ *		The y coordinate
+ *
+ * @param height
+ *		The height coordinate
+ */
+void Position::set_x_y_height(float x, float y, float height) {
+	this->set_x_y(x, y);
+	this->set_height(height);
+}
 
-			// Get the map id
-			unsigned short Position::get_map() {
-				return this->map;
-			}
+// Get the map id
+unsigned short Position::get_map() {
+	return this->map;
+}
 
-			// Get the x coordinate
-			float Position::get_x() {
-				return this->x;
-			}
+// Get the x coordinate
+float Position::get_x() {
+	return this->x;
+}
 
-			// Get the y coordinate
-			float Position::get_y() {
-				return this->y;
-			}
+// Get the y coordinate
+float Position::get_y() {
+	return this->y;
+}
 
-			// Get the height coordinate
-			float Position::get_height() {
-				return this->height;
-			}
+// Get the height coordinate
+float Position::get_height() {
+	return this->height;
+}
 
-			// Get the direction
-			unsigned char Position::get_direction() {
-				return this->direction;
-			}
+// Get the direction
+unsigned short Position::get_direction() {
+	return this->direction;
+}

@@ -100,10 +100,10 @@ namespace Genesis::Auth::Io::Packets::Impl {
 				std::string ip_address(found_server->ip_address);
 
 				// TODO: Finish ip address string splitting
-				bldr->write_byte(144);
-				bldr->write_byte(217);
-				bldr->write_byte(14);
-				bldr->write_byte(189);
+				bldr->write_byte(192);
+				bldr->write_byte(168);
+				bldr->write_byte(0);
+				bldr->write_byte(5);
 
 			}
 
@@ -115,7 +115,7 @@ namespace Genesis::Auth::Io::Packets::Impl {
 
 			// Delete the packet builder and server
 			delete bldr;
-
+			
 			// Return true
 			return true;
 		}

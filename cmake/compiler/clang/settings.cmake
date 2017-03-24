@@ -40,7 +40,7 @@ if (BUILD_SHARED_LIBS)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -fvisibility=hidden")
 
   # --no-undefined to throw errors when there are undefined symbols
-  # (caused through missing TRINITY_*_API macros).
+  # (caused through missing GENESIS_*_API macros).
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --no-undefined")
 
   message(STATUS "Clang: Disallow undefined symbols")

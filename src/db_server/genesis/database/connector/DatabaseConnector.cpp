@@ -23,51 +23,33 @@
 #include <genesis/common/configuration/ConfigManager.h>
 #include <iostream>
 #include <string>
-#include <sstream> 
+#include <sstream>
 
 bool Genesis::Database::Connector::DatabaseConnector::connect() {
 
-	// The SQL details
-	auto server = config_manager->get_value_or_default<std::string>("SqlHost", "127.0.0.1").c_str();
-	auto port = config_manager->get_value_or_default<unsigned short>("SqlPort", 3306);
-	auto user = config_manager->get_value_or_default<std::string>("SqlUser", "root").c_str();
-	auto password = config_manager->get_value_or_default<std::string>("SqlPassword", "password").c_str();
-
-	// The stringstream
-	std::stringstream stream;
-
-	// Add the protocl
-	stream << "tcp://";
-
-	// Add the ip address
-	stream << server;
-
-	// Add the delimiter
-	stream << ":";
-
-	// Add the port
-	stream << port;
-
-	// Create a new connection
+	// Define the driver instance
 	this->driver = get_driver_instance();
-	this->connection = driver->connect(stream.str(), user, password);
 
-	// The option
-	bool client_multi_statements = true;
+	// The connection instance
+	auto connection = this->get_connection();
 
-	// Set the client options
-	connection->setClientOption("CLIENT_MULTI_STATEMENTS", &client_multi_statements);
+	// If the connection is valid
+	bool valid = connection->isValid();
 
-	// Connect to the database
-	return this->connection->isValid();
+	// Delete the connection instance
+	delete connection;
+
+	// Return the status of the connection
+	return valid;
 }
 
 sql::Connection* Genesis::Database::Connector::DatabaseConnector::get_connection() {
+	
 	// The SQL details
-	auto server = config_manager->get_value_or_default<std::string>("SqlHost", "127.0.0.1").c_str();
+	auto server = config_manager->get_value_or_default<std::string>("SqlHost", "127.0.0.1");
 	auto port = config_manager->get_value_or_default<unsigned short>("SqlPort", 3306);
-	auto user = config_manager->get_value_or_default<std::string>("SqlUser", "root").c_str();
-	auto password = config_manager->get_value_or_default<std::string>("SqlPassword", "password").c_str();
+	auto user = config_manager->get_value_or_default<std::string>("SqlUser", "root");
+	auto password = config_manager->get_value_or_default<std::string>("SqlPassword", "password");
 
 	// The stringstream
 	std::stringstream stream;
@@ -85,8 +67,7 @@ sql::Connection* Genesis::Database::Connector::DatabaseConnector::get_connection
 	stream << port;
 
 	// Create a new connection
-	this->driver = get_driver_instance();
-	this->connection = driver->connect(stream.str(), user, password);
+	auto connection = driver->connect(stream.str(), user, password);
 
 	// The option
 	bool client_multi_statements = true;
@@ -95,5 +76,5 @@ sql::Connection* Genesis::Database::Connector::DatabaseConnector::get_connection
 	connection->setClientOption("CLIENT_MULTI_STATEMENTS", &client_multi_statements);
 
 	// Connect to the database
-	return this->connection;
+	return connection;
 }

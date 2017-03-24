@@ -24,6 +24,7 @@
 
 #include <genesis/game/model/entity/Attributes.h>
 #include <genesis/game/model/entity/Position.h>
+#include <genesis/game/model/entity/UpdateFlags.h>
 
 #include <string>
 
@@ -61,6 +62,9 @@ namespace Genesis::Game::Model::Entity {
 			// Gets the position instance for this entity
 			Genesis::Game::Model::Entity::Position* get_position();
 
+			// Gets teh update flags for this entity
+			Genesis::Game::Model::Entity::UpdateFlags* get_update_flags();
+			
 			// Gets the name of the entity
 			std::string& get_name();
 
@@ -81,6 +85,8 @@ namespace Genesis::Game::Model::Entity {
 			// The position of the entity
 			Genesis::Game::Model::Entity::Position* position = new Genesis::Game::Model::Entity::Position();
 			
+			// The update flags of the entity
+			Genesis::Game::Model::Entity::UpdateFlags* update_flags = new Genesis::Game::Model::Entity::UpdateFlags();
 	};
 }
 #endif

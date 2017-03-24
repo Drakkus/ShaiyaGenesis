@@ -59,6 +59,8 @@ namespace Genesis::Game::Model::Entity::Player {
 			// Get the max game mode
 			unsigned char get_max_game_mode();
 			
+			unsigned int get_points();
+			
 			// Set the faction for this player
 			void set_faction(unsigned char faction);
 

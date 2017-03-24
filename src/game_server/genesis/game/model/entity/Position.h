@@ -30,13 +30,24 @@ namespace Genesis::Game::Model::Entity {
 
 		public:
 
+			// A default constructor
+			Position() {
+				this->set(0, 0, 0, 0, 0);
+			}
+
+			// A constructor instance
+			Position(unsigned short map, float x, float y, float height, unsigned short direction) {
+				this->set(map, x, y, height, direction);
+			}
+			
 			// Set the position
-			void set(unsigned short map, float x, float y, float height, unsigned char direction);
+			void set(Position* position);
+			void set(unsigned short map, float x, float y, float height, unsigned short direction);
 			void set_map(unsigned short map);
 			void set_x(float x);
 			void set_y(float y);
 			void set_height(float height);
-			void set_direction(unsigned char direction);
+			void set_direction(unsigned short direction);
 			void set_x_y(float x, float y);
 			void set_x_y_height(float x, float y, float height);
 
@@ -53,9 +64,9 @@ namespace Genesis::Game::Model::Entity {
 			float get_height();
 
 			// Get the direction
-			unsigned char get_direction();
+			unsigned short get_direction();
 
-			// Overload the equal operator for position comparisons
+			// Overload the equal comparison operator for position comparisons
 			bool operator==(Genesis::Game::Model::Entity::Position* position) {
 				return ((this->get_map() == position->get_map()) && 
 					(this->get_x() == position->get_x()) && 
@@ -75,7 +86,7 @@ namespace Genesis::Game::Model::Entity {
 			float height;
 
 			// The direction the entity is facing
-			unsigned char direction;
+			unsigned short direction;
 	};
 }
 #endif

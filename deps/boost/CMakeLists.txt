@@ -35,7 +35,7 @@ if(WIN32)
   set(Boost_USE_STATIC_RUNTIME     OFF)
 endif()
 
-find_package(Boost 1.55 REQUIRED system filesystem thread program_options iostreams)
+find_package(Boost 1.58 REQUIRED system filesystem thread program_options iostreams)
 
 # Find if Boost was compiled in C++03 mode because it requires -DBOOST_NO_CXX11_SCOPED_ENUMS
 include(CheckCXXSourceCompiles)

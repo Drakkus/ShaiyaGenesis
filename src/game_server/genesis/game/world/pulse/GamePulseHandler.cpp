@@ -23,6 +23,9 @@
 
 #include <genesis/common/logging/Logger.h>
 
+#include <thread>
+#include <chrono>
+
 // Use the pulse namespace
 using namespace Genesis::Game::World::Pulse;
 
@@ -35,14 +38,22 @@ void GamePulseHandler::start() {
 		return;
 	}
 
-	// The thread instance
-	std::thread thread(std::bind(&GamePulseHandler::pulse, this));
-
-	// Detach the thread
-	thread.detach();
-
 	// Start the pulse handler
 	this->is_running = true;
+
+	// The thread instance
+	std::thread thread(std::bind(&Genesis::Game::World::Pulse::GamePulseHandler::pulse, this));
+
+	// The player updating thread
+	std::thread player_updating(std::bind(&Genesis::Game::World::Pulse::GamePulseHandler::pulse_player_updates, this));
+
+	// The mob updating thread
+	std::thread mob_updating(std::bind(&Genesis::Game::World::Pulse::GamePulseHandler::pulse_mob_updates, this));
+
+	// Detach the threads
+	thread.detach();
+	player_updating.detach();
+	mob_updating.detach();
 }
 
 /**
@@ -57,20 +68,46 @@ void GamePulseHandler::pulse() {
 		this->mutex.lock();
 
 		// If there are tasks to be processed
-		if (tasks.size() != 0) {
+		if (!tasks.empty()) {
 
 			// The task to execute
 			auto task = tasks.front();
 
 			// Pop the task from the queue
 			tasks.pop();
-		
+
 			// Execute the task
 			task->execute();
 		}
 
 		// Unlock the mutex
 		this->mutex.unlock();
+	}
+}
+
+/**
+ * Processes player updates (informing characters of all updates about other character actions)
+ */
+void GamePulseHandler::pulse_player_updates() {
+	while (this->is_running) {
+
+		genesis_logger->info("hi, player update pulse");
+
+		// Sleep for 30ms
+		std::this_thread::sleep_for(std::chrono::milliseconds(30));
+	}
+}
+
+/**
+ * Processes mobs updates (informing characters of all updates about mob actions)
+ */
+void GamePulseHandler::pulse_mob_updates() {
+	while (this->is_running) {
+
+		genesis_logger->info("hi, mob update pulse");
+
+		// Sleep for 30ms
+		std::this_thread::sleep_for(std::chrono::milliseconds(30));
 	}
 }
 
@@ -84,7 +121,7 @@ void GamePulseHandler::offer(Genesis::Game::World::Pulse::Task::Task* task) {
 
 	// Lock the mutex
 	this->mutex.lock();
-
+	
 	// Add the task to the queue
 	this->tasks.push(task);
 

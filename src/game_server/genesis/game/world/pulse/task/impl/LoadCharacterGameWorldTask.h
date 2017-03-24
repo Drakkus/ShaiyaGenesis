@@ -63,6 +63,17 @@ namespace Genesis::Game::World::Pulse::Task::Impl {
 			// Load the character's items
 			void load_character_items(Genesis::Game::Model::Entity::Player::Character* character);
 
+			// Load the character's quests
+			void load_character_quests(Genesis::Game::Model::Entity::Player::Character* character);
+
+			// Load the character's active buffs
+			void load_character_active_buffs(Genesis::Game::Model::Entity::Player::Character* character);
+
+			// Load the character's skill bars
+			void load_character_skill_bars(Genesis::Game::Model::Entity::Player::Character* character);
+
+			void do_test(Genesis::Game::Model::Entity::Player::Character* character);
+
 		private:
 
 			// The player instance

@@ -19,12 +19,49 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#ifndef GENESIS_GAME_MODEL_DEFINITIONS_SKILLDEFINITION_H
-#define GENESIS_GAME_MODEL_DEFINITIONS_SKILLDEFINITION_H
+#ifndef GENESIS_GAME_MODEL_ENTITY_UPDATEFLAGS_H
+#define GENESIS_GAME_MODEL_ENTITY_UPDATEFLAGS_H
 
-namespace Genesis::Game::Model::Definitions {
-	struct SkillDefinition {
+/**
+ * A utility class, which indicates whether an entity required an update
+ * for an action performed.
+ */
+namespace Genesis::Game::Model::Entity {
+	class UpdateFlags {
 
+		public:
+
+			// If an update is required on the entity's position
+			bool is_movement_update_required();
+
+			// If an update is required on the entity's equipment
+			bool is_equipment_update_required();
+
+			// If an update is required on the entity's buffs
+			bool is_buff_update_required();
+
+			// If an update is required on the entity's hitpoints
+			bool is_hitpoint_update_required();
+
+			// Resets the various update flags
+			void reset_movement_update();
+			void reset_equipment_update();
+			void reset_buff_update();
+			void reset_hitpoint_update();
+
+		private:
+
+			// If a movement update is required
+			bool movement_update = false;
+
+			// If an equipment update is required
+			bool equipment_update = false;
+
+			// If a buff update is required
+			bool buff_update = false;
+
+			// If an update on the hitpoints is required
+			bool hitpoint_update = false;
 	};
 }
 #endif

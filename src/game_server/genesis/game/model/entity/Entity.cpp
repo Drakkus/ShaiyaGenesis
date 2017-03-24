@@ -34,6 +34,9 @@ void Entity::destroy() {
 
 	// Delete the position instance
 	delete this->position;
+
+	// Delete the update flags instance
+	delete this->update_flags;
 }
 
 // Gets the name of the entity
@@ -66,6 +69,22 @@ Genesis::Game::Model::Entity::Attributes* Entity::get_attributes() {
 	return this->attributes;
 }
 
+/**
+ * Gets the position of this entity
+ *
+ * @returns
+ *		The position
+ */
 Genesis::Game::Model::Entity::Position* Entity::get_position() {
 	return this->position;
+}
+
+/**
+ * Gets the update flags of this entity
+ *
+ * @returns
+ *		The update flags
+ */
+Genesis::Game::Model::Entity::UpdateFlags* Entity::get_update_flags() {
+	return this->update_flags;
 }

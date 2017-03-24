@@ -64,6 +64,9 @@ unsigned char Player::get_max_game_mode() {
 	return this->max_game_mode;
 }
 			
+unsigned int Player::get_points() {
+	return this->points;
+}
 /**
  * Sets the faction for this player
  *

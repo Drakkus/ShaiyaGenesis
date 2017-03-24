@@ -45,6 +45,12 @@ namespace Genesis::Game::World::Pulse {
 			// Begins processing a task
 			void pulse();
 
+			// Pulse for player updating
+			void pulse_player_updates();
+
+			// Pulse for mob updating
+			void pulse_mob_updates();
+
 			// Offers a new task to the pulse handler
 			void offer(Genesis::Game::World::Pulse::Task::Task* task);
 			

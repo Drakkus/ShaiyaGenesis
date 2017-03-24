@@ -85,7 +85,7 @@ void SendPlayerCharacterListTask::execute() {
 			// Write the character id
 			bldr->write_int(character.character_id);
 
-			// Unknown
+			// Unknown (Character creation time?)
 			bldr->write_int(0);
 
 			// Write the character's level

@@ -116,6 +116,9 @@ namespace Genesis::Game::Model::Entity::Player {
 			void set_guild_id(unsigned int guild_id);
 			unsigned int get_guild_id() const;
 
+			Genesis::Game::Model::Entity::Player::Player* get_player() const {
+				return this->player;
+			}
 		private:
 
 			// The player instance that this character is associated with

@@ -9,16 +9,8 @@ Shaiya Genesis is completely open source; community involvement is highly encour
 The following libraries are required to build Shaiya Genesis:
 
  - Boost >= 1.55
- - MySQL
+ - MySQL Connector C++
  - OpenSSL
-
-## Building
-
-```
-apt-get install libboost-all-dev libmysql++-dev libssl-dev
-git clone https://github.com/TristonPlummer/ShaiyaGenesis
-cmake -B./build/ -H. && cd build && make
-```
 	
 ## Copyright
 License: MIT
