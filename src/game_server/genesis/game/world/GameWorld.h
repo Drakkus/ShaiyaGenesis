@@ -25,6 +25,7 @@
 #include <genesis/game/model/entity/player/Player.h>
 #include <genesis/game/io/IoServer.h>
 #include <genesis/game/world/pulse/GamePulseHandler.h>
+#include <genesis/game/command/CommandDispatcher.h>
 
 #include <genesis/common/networking/client/GenesisClient.h>
 
@@ -73,6 +74,11 @@ namespace Genesis::Game::World {
 			// Delete the player instance
 			void delete_player_for_index(unsigned int index);
 			
+			// Gets the command dispatcher instance
+			Genesis::Game::Command::CommandDispatcher* get_command_dispatcher() {
+				return this->command_dispatcher;
+			}
+			
 		private:
 			
 			// The server id
@@ -92,6 +98,9 @@ namespace Genesis::Game::World {
 
 			// The GamePulseHandler
 			Genesis::Game::World::Pulse::GamePulseHandler* pulse_handler;
+
+			// The command dispatcher instance
+			Genesis::Game::Command::CommandDispatcher* command_dispatcher = new Genesis::Game::Command::CommandDispatcher();
 	};
 }
 #endif

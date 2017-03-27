@@ -22,6 +22,7 @@
 #include <genesis/game/world/GameWorld.h>
 #include <genesis/game/world/pulse/task/Task.h>
 #include <genesis/game/world/pulse/task/impl/LoadPlayerTask.h>
+#include <genesis/game/scripting/LuaScriptingEnvironment.h>
 
 #include <genesis/common/logging/Logger.h>
 #include <genesis/common/configuration/ConfigManager.h>
@@ -38,6 +39,12 @@ using namespace Genesis::Game::World;
  * Initialise the game world
  */
 void GameWorld::init(unsigned char server_id) {
+
+	// Inform the user that the scripting environment is loading
+	genesis_logger->info("Initialising Lua scripting environment...");
+
+	// Initialise the scripting environment
+	scripting_env->init();
 
 	// Inform the user that the game server is being initialised
 	genesis_logger->info("Initialising game world...");

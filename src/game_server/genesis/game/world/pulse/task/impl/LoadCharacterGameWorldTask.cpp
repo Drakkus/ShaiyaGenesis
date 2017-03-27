@@ -25,7 +25,8 @@
 #include <genesis/common/database/Opcodes.h>
 #include <genesis/common/packets/Opcodes.h>
 #include <genesis/common/database/structs/game/CharacterLoadInfo.h>
- 
+
+#include <genesis/game/command/Command.h>
 #include <genesis/game/world/GameWorld.h>
 #include <genesis/game/model/entity/player/Character.h>
 #include <genesis/game/model/entity/Position.h>
@@ -323,7 +324,15 @@ void LoadCharacterGameWorldTask::do_test(Genesis::Game::Model::Entity::Player::C
     Genesis::Common::Networking::Packets::PacketBuilder pkt19(0x0115);
     pkt19.write_int(1483326283);
    // character->write(pkt19.to_packet());
- 
+ // The command dispatcher instance
+        auto dispatcher = Genesis::Game::World::GameWorld::get_instance()->get_command_dispatcher();
+        std::vector<std::string> args;
+        args.push_back("hello");
+
+        auto command = new Genesis::Game::Command::Command("notice", args);
+
+        // Register the listener
+        dispatcher->dispatch(character, command);
 
  
     // 22 Skillbar
@@ -336,5 +345,5 @@ void LoadCharacterGameWorldTask::do_test(Genesis::Game::Model::Entity::Player::C
     packet_repository->send_current_hp_mp_sp(character);
 
     // Send a welcome notice
-    packet_repository->send_notice(character, "Welcome to Shaiya Genesis, %s!", { character->get_name().c_str() });
+  //  packet_repository->send_notice(character, "Welcome to Shaiya Genesis, %s!", { character->get_name().c_str() });
 }

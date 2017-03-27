@@ -9,3 +9,7 @@ OpenSSL (general-purpose cryptography library)
 MySQL
 	https://www.mysql.com/
 	Version: external
+
+Ruby
+	http://ruby-lang.org/
+	Version: external

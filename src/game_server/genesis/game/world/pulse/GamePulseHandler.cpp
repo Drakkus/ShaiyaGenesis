@@ -91,8 +91,6 @@ void GamePulseHandler::pulse() {
 void GamePulseHandler::pulse_player_updates() {
 	while (this->is_running) {
 
-		genesis_logger->info("hi, player update pulse");
-
 		// Sleep for 30ms
 		std::this_thread::sleep_for(std::chrono::milliseconds(30));
 	}
@@ -103,8 +101,6 @@ void GamePulseHandler::pulse_player_updates() {
  */
 void GamePulseHandler::pulse_mob_updates() {
 	while (this->is_running) {
-
-		genesis_logger->info("hi, mob update pulse");
 
 		// Sleep for 30ms
 		std::this_thread::sleep_for(std::chrono::milliseconds(30));

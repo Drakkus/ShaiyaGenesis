@@ -47,15 +47,15 @@ bool DefaultPacketHandler::handle(Genesis::Common::Networking::Server::Session::
 	old_state.copyfmt(std::cout);
 
 	// Inform the user that an undefined packet is received
-	std::cout << "[Unhandled packet, Opcode: " << opcode << ", Length: " << length << ", Data: ";
+	//std::cout << "[Unhandled packet, Opcode: " << opcode << ", Length: " << length << ", Data: ";
 
 	// Write the packet data, in hex form
 	for (int i = 0; i < length; i++) {
-		std::cout << std::setw(2) << std::setfill('0') << std::hex << (int)data[i] << " ";
+	//	std::cout << std::setw(2) << std::setfill('0') << std::hex << (int)data[i] << " ";
 	}
 
 	// End the information message
-	std::cout << "]" << std::endl;
+	//std::cout << "]" << std::endl;
 
 	// Restore the standard output state
 	std::cout.copyfmt(old_state);

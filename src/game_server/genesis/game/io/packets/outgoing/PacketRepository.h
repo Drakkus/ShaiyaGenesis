@@ -53,6 +53,9 @@ namespace Genesis::Game::Io::Packets::Outgoing {
 			 * Sends a notice message to the character
 			 */
 			void send_notice(Genesis::Game::Model::Entity::Player::Character*, const char*, std::initializer_list<const char*>);
+			void send_notice_noargs(Genesis::Game::Model::Entity::Player::Character* character, const char* message) {
+				this->send_notice(character, message, {});
+			}
 
 			/**
 			 * Sends the character's current HP, MP and SP

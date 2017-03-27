@@ -14,7 +14,8 @@ add_library(gameserver-interface INTERFACE)
 # Define the update server interface library to include the public sources
 target_include_directories(gameserver-interface
   INTERFACE
-    ${PUBLIC_INCLUDES})
+    ${PUBLIC_INCLUDES}
+    ${LUA_INCLUDE_DIR})
 	
 # Add the library build target
 add_executable(game_server ${SRC})
@@ -26,4 +27,5 @@ set_target_properties(game_server PROPERTIES LINKER_LANGUAGE CXX)
 target_link_libraries(game_server
 	PUBLIC
 		gameserver-interface
-		common)
+		common
+		lua)
