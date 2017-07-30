@@ -15,3 +15,13 @@ The following libraries are required to build Shaiya Genesis:
 ## Copyright
 License: MIT
 Read file: [LICENSE](LICENSE)
+
+## Images
+
+![Login server test](https://images.weserv.nl/?url=image.prntscr.com%2Fimage%2F2a7cacfb16634a269596cc1cc00ec858.png)
+
+![Character list test](https://images.weserv.nl/?url=image.prntscr.com%2Fimage%2F28051b71c09244adb38419208fff0cfd.png)
+
+![Game world test](https://images.weserv.nl/?url=image.prntscr.com%2Fimage%2F220fb03e3b484c8085a497167a9ba800.png)
+
+![Scripting system test](https://images.weserv.nl/?url=image.prntscr.com%2Fimage%2Fe4a6e96f9231455494e9ce55830e38e9.png)
