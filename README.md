@@ -1,5 +1,8 @@
 # Shaiya Genesis
 
+## Notice
+Please note, this repository is no longer under active development. This remains purely as reference material, and is not intended to be used in production. For a more active and up-to-date repository, please visit the [Shaiya Genesis Repository](https://github.com/ShaiyaGenesis).
+
 ## Introduction
 Shaiya Genesis is an emulator for the Shaiya MMORPG. It is written mostly in C++. The goal is to provide an open source, community involved emulator for Shaiya, and provide developers with an alternative that allows them to better develop content, and operate using a more stable server.
 
